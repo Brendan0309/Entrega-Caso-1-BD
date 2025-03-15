@@ -139,6 +139,24 @@ Campos obtenidos:
 -	El nonce
 -	etc
 
+-> Modelo para las Compañías
+Para las compañías se tomó la idea de utilizarlas bajo la suposición de que las empresas tienen convenios con la aplicación donde le compran paquetes especiales a sus empleados para que les facilite sus pagos cotidianos.
+Por este motivo a las compañías se les dio un énfasis hacia el área de las subscripciones y los pagos.
+
+En las compañías se guarda el nombre, se relacionan con las direcciones y su fecha de creación. 
+
+Además, en su relación con los usuarios también se guarda su rol dentro de las compañías. Mientras que en las tablas de roles se guardan los roles dentro de la cuenta (owner, partner, client, admin, system, etc) en el rol de la compañía se guarda la profesión. Esta profesión se guarda con el propósito de hacer analíticas y estadísticas para saber la profesión general de los clientes y poder mejorar los convenios y otros aspectos de la aplicación.
+
+-> Audios
+La implementación por voz de la aplicación se maneja mediante transcripciones de los audios que son guardados en la nube. A partir de la interpretación de la transcripción se interpreta el comando.
+
+-> Algunos otros puntos de referencia:
+Calendario de Google (modelado de horarios y agendas)
+![image](https://github.com/user-attachments/assets/c3c8f4a9-6368-4946-a624-a82429f01b4a)
+
+Aplicaciones webs basados en subscripciones tales como Disney+, HBO Max, Netflix, Spotify, etc. (modelado de las subscripciones y los features)
+![image](https://github.com/user-attachments/assets/10c7d4ea-da7f-4b91-8ac4-ee1cf70dc733)
+
 Ejemplos que se usaron como ayuda 
 ![image](https://github.com/user-attachments/assets/7b634dd2-e7c5-4a79-8f77-09b93e1459e1)
 
@@ -146,5 +164,8 @@ Ejemplos que se usaron como ayuda
 
 ![image](https://github.com/user-attachments/assets/3b6126e4-777a-4174-9ef4-64a5c5a82218)
 
-Diagrama de la base de datos
+-> Otros modelos
+Las principales decisiones de diseño para todos los modelos fueron tomadas en base a los modelos vistos en clase y la asistencia del profesor.
+
+Diagrama de la base de datos:
 [AvanceFinal.pdf](https://github.com/user-attachments/files/19257779/AvanceFinal.pdf)
