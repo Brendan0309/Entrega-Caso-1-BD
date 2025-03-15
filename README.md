@@ -62,7 +62,9 @@ Lista de entidades:
 - Idioma
 - Traduccion
 
-Schema de ejemplo que se uso como ayuda 
+Ejemplos que se usaron como ayuda 
 ![image](https://github.com/user-attachments/assets/7b634dd2-e7c5-4a79-8f77-09b93e1459e1)
 
+![image](https://github.com/user-attachments/assets/1b0e5935-367c-4331-ba72-a440885823fc)
 
+![image](https://github.com/user-attachments/assets/3b6126e4-777a-4174-9ef4-64a5c5a82218)
