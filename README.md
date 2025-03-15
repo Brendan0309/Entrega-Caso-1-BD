@@ -125,7 +125,10 @@ Para los campos en la tabla de APIs se tomó como referencia APIs como la de Pay
 
 Los links de referencia utilizados son:
 https://developer.paypal.com/api/rest/
+![image](https://github.com/user-attachments/assets/3bd88132-4f0d-41f7-8410-3f0d04611cb7)
+![image](https://github.com/user-attachments/assets/26b75785-167c-4bec-82d3-303d1100c220)
 https://docs.stripe.com/api
+![image](https://github.com/user-attachments/assets/6c009655-2a94-44fd-93a8-c8b670809fa5)
 
 De ahí se tomaron campos como el código de respuesta y los tokens necesarios para el correcto funcionamiento de las APIs.
 
@@ -134,6 +137,7 @@ Campos obtenidos:
 -	El código de 3 dígitos de status
 -	Tiempo de expiración
 -	El nonce
+-	etc
 
 Ejemplos que se usaron como ayuda 
 ![image](https://github.com/user-attachments/assets/7b634dd2-e7c5-4a79-8f77-09b93e1459e1)
