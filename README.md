@@ -68,3 +68,6 @@ Ejemplos que se usaron como ayuda
 ![image](https://github.com/user-attachments/assets/1b0e5935-367c-4331-ba72-a440885823fc)
 
 ![image](https://github.com/user-attachments/assets/3b6126e4-777a-4174-9ef4-64a5c5a82218)
+
+Diagrama de la base de datos
+[Lista de entidades 1.pdf](https://github.com/user-attachments/files/19257777/Lista.de.entidades.1.pdf)
