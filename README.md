@@ -168,4 +168,5 @@ Ejemplos que se usaron como ayuda
 Las principales decisiones de diseño para todos los modelos fueron tomadas en base a los modelos vistos en clase y la asistencia del profesor.
 
 Diagrama de la base de datos:
-[AvanceFinal.pdf](https://github.com/user-attachments/files/19257779/AvanceFinal.pdf)
+
+[AvanceFinal.pdf](https://github.com/user-attachments/files/19258716/AvanceFinal.pdf)
