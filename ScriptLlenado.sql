@@ -1,5 +1,3 @@
-
-
 DELIMITER //
 CREATE PROCEDURE PopulatePeople()
 BEGIN
@@ -26,3 +24,18 @@ BEGIN
         SET @numberRows = @numberRows-1;
 	END WHILE;
 END //
+
+CREATE PROCEDURE PopulateUsers()
+BEGIN
+    SET @numberRows = 40;
+    WHILE @numberRows > 0 DO
+	SET @password = sha2(@numberRows, 512);
+        SET @personid = @numberRows;
+        INSERT INTO Payment_Users(password, enabled, userCompanyId, personID)
+        VALUES (@password, 1, null, @personid);
+        SET @numberRows = @numberRows-1;
+	END WHILE;
+END//
+
+call PopulatePeople();
+call PopulateUsers();
