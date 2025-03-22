@@ -25,15 +25,23 @@ BEGIN
 	END WHILE;
 END //
 
+DROP PROCEDURE PopulateUsers;
+DELIMITER //
 CREATE PROCEDURE PopulateUsers()
 BEGIN
-    SET @numberRows = 40;
+	SET @numberRows = 40;
     WHILE @numberRows > 0 DO
-	SET @password = sha2(@numberRows, 512);
+		SET @password = sha2(@numberRows, 512);
         SET @personid = @numberRows;
         INSERT INTO Payment_Users(password, enabled, userCompanyId, personID)
         VALUES (@password, 1, null, @personid);
         SET @numberRows = @numberRows-1;
+	END WHILE;
+    SET @numberDisabled = 15;
+    WHILE @numberDisabled > 0 DO
+		SET @disabledid = FLOOR(1+RAND()*40);
+        UPDATE Payment_Users SET enabled = 0 WHERE userid = @disabledid;
+        SET @numberDisabled = @numberDisabled-1;
 	END WHILE;
 END//
 
