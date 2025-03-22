@@ -24,8 +24,7 @@ BEGIN
         SET @numberRows = @numberRows-1;
 	END WHILE;
 END //
-
-DROP PROCEDURE PopulateUsers;
+DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE PopulateUsers()
 BEGIN
@@ -44,6 +43,34 @@ BEGIN
         SET @numberDisabled = @numberDisabled-1;
 	END WHILE;
 END//
-
+DELIMITER ;
+INSERT INTO Payment_MediaTypes(name, playerImp) VALUES
+('Invoice PDF', 'PDF Reader'),
+('Transcript File', 'PDF Reader'),
+('Audio File', 'MP3 Player'),
+('Video File', 'MP4 Player'),
+('Image', 'Image Visualizer');
+DELIMITER //
+CREATE PROCEDURE PopulateMediaFiles()
+BEGIN
+    SET @numberRows = 60;
+    WHILE @numberRows > 0 DO
+	SET @mediaType = FLOOR(1+RAND()*5);
+	SET @genTime = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 800) DAY);
+	SET @genTime = DATE_ADD(DATE(@genTime), INTERVAL FLOOR(5 + RAND() * 9) HOUR); 
+	SET @genTime = DATE_ADD(@genTime, INTERVAL FLOOR(RAND() * 60) MINUTE);
+        INSERT INTO Payment_MediaFiles(url, deleted, mediaTypeid, reference, generationDate)
+        VALUES (CONCAT("https://www.filenumb",@numberRows,".com"), 0, @mediaType, CONCAT("ArchivoNum",@numberRows,"20251123675_0"), @genTime); 
+	SET @numberRows = @numberRows-1; 
+    END WHILE;
+    SET @transcriptNumbers = 15;
+    WHILE @transcriptNumbers > 0 DO
+	SET @transcriptid = FLOOR(1+RAND()*60);
+        UPDATE Payment_MediaFiles SET mediaTypeid = 2 WHERE mediaFileId = @transcriptid;
+        SET @transcriptNumbers = @transcriptNumbers-1;
+    END WHILE;
+END//
+DELIMITER ;
 call PopulatePeople();
 call PopulateUsers();
+CALL PopulateMediaFiles();
