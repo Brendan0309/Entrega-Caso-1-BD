@@ -7,7 +7,7 @@ BEGIN
     SET  @birthdate = NULL;
     SET @consumerid = 0;
     WHILE @numberRows > 0 DO
-		SET @birthdate =  DATE_ADD('1980-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2025-12-31', '1980-01-01')) DAY);
+	SET @birthdate =  DATE_ADD('1980-01-01', INTERVAL FLOOR(RAND() * DATEDIFF('2025-12-31', '1980-01-01')) DAY);
         SET @firstname = ELT(FLOOR(1 + RAND() * 40),
 			'James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth',
 			'David', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Sarah', 'Charles', 'Karen',
@@ -25,12 +25,13 @@ BEGIN
 	END WHILE;
 END //
 DELIMITER ;
+CALL PopulatePeople();
 DELIMITER //
 CREATE PROCEDURE PopulateUsers()
 BEGIN
-	SET @numberRows = 40;
+    SET @numberRows = 40;
     WHILE @numberRows > 0 DO
-		SET @password = sha2(@numberRows, 512);
+	SET @password = sha2(@numberRows, 512);
         SET @personid = @numberRows;
         INSERT INTO Payment_Users(password, enabled, userCompanyId, personID)
         VALUES (@password, 1, null, @personid);
@@ -38,12 +39,13 @@ BEGIN
 	END WHILE;
     SET @numberDisabled = 15;
     WHILE @numberDisabled > 0 DO
-		SET @disabledid = FLOOR(1+RAND()*40);
+	SET @disabledid = FLOOR(1+RAND()*40);
         UPDATE Payment_Users SET enabled = 0 WHERE userid = @disabledid;
         SET @numberDisabled = @numberDisabled-1;
 	END WHILE;
 END//
 DELIMITER ;
+CALL PopulateUsers();
 INSERT INTO Payment_MediaTypes(name, playerImp) VALUES
 ('Invoice PDF', 'PDF Reader'),
 ('Transcript File', 'PDF Reader'),
@@ -71,6 +73,35 @@ BEGIN
     END WHILE;
 END//
 DELIMITER ;
-call PopulatePeople();
-call PopulateUsers();
 CALL PopulateMediaFiles();
+INSERT INTO Payment_AudioEvent(name, enabled) VALUES
+('Payment Registration', 1),
+('New Transaction', 1),
+('Action Cancelation', 1),
+('Clarification', 1),
+('Payment Confirmation',1),
+('Source Provided',1),
+('Destination Provided',1),
+('IBAN Acccount Provided', 1),
+('Card Number Provided', 1),
+('Prompt repetition', 1),
+('Unknown Response', 1);
+DELIMITER //
+CREATE PROCEDURE PopulateCuePoints()
+BEGIN
+    SET @rowNumbers = 100;
+    WHILE @rowNumbers > 0 DO
+	SET @startTimestamp = NOW() - INTERVAL FLOOR(RAND() * 365) DAY - INTERVAL FLOOR(RAND() * 24) HOUR - INTERVAL FLOOR(RAND() * 60) MINUTE - INTERVAL FLOOR(RAND() * 60) SECOND;
+	SET @endTimestamp = DATE_ADD(@startTimestamp, INTERVAL FLOOR(1+RAND()*60) SECOND);
+        SET @description = ELT(FLOOR(1+RAND()*5) , 'User started a command', 'User manually opened asistant', 'User called for asistant', 'User said a keyword', 'User pressed a key button');
+        INSERT INTO Payment_CuePoints (description, startTime, endTime)
+        VALUES (@description, @startTimestamp, @endTimestamp);
+        SET @rowNumbers = @rowNumbers-1;
+	END WHILE;
+END //
+DELIMITER ;
+CALL PopulateCuePoints();
+	
+
+
+
