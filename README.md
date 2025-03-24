@@ -120,14 +120,19 @@ Brendan Ramírez Campos
 - ScreenRecorder
 - ScreenEvents
 - AudioRecorder
+- Audio Transcripts 
 - AudioEvents
 - SyncScreenAudio
 - CuePoints
 - Transcriptions
+- Transcription Task
 - IA
 - IA Conection
 - IA Responses
-- IA Processing
+- IA ProcessingLogs
+- Transcript Files
+- Recording Files
+- User Preferenses
 
 **Documetación General del Proyecto**
 Documentación sobre entidades principales
