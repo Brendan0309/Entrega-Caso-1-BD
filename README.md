@@ -5,9 +5,7 @@ Nombre de los integrantes:
 -Julián Castro Barrantes
 
 -Brendan Ramírez Campos
-
-
-
+<hr>
 
 Diseño Actualizado de la base de datos: [AvanceFinal.pdf](./AvanceFinal.pdf)<br>
 Script de Creación de la base de datos:<br>
@@ -18,31 +16,32 @@ Script para Llenar la base de datos:<br>
 	- ARCHIVO .SQL: [ScriptLlenado.sql](./ScriptLlenado.sql)<br><br>
  Script para las consultas solicitadas:<br>
  	- ARCHIVO .SQL: [ScriptSelects.sql](./'Script Selects.sql')<br><br>
+  <hr>
   Consultas Solicitadas:
   	1.  Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros) <br>
    **Código MySQL**:
 
-SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,
-CASE
-    WHEN PP.recurrencyType = 1 THEN 'Mensual'
-    WHEN PP.recurrencyType = 2 THEN 'Anual'
-    WHEN PP.recurrencyType = 3 THEN 'Permanente' END 'Frecuencia de Cobro',
-CASE
-    WHEN PP.recurrencyType = 1 THEN TIMESTAMPDIFF(MONTH, PPE.adquisitionDate, NOW())*PP.amount
-    WHEN PP.recurrencyType = 2 THEN TIMESTAMPDIFF(YEAR, PPE.adquisitionDate, NOW())*PP.amount
-    WHEN PP.recurrencyType = 3 THEN PP.amount END 'Total Pagado'
-FROM Payment_Users PU
-INNER JOIN Payment_Personas PS ON PU.personID= PS.personID
-INNER JOIN Payment_ContactInfoPerson CIP ON (PS.personID = CIP.personID AND CIP.contacInfoTypeID = 1)
-INNER JOIN Payment_UserAdresses UA ON PU.userid = UA.userid
-INNER JOIN Payment_Adresses AD ON UA.adressid = AD.adressid
-INNER JOIN Payment_Cities CY ON CY.cityid = AD.cityid
-INNER JOIN Payment_States ST ON ST.stateid = CY.cityid
-INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid
-INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid
-INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid
-INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid
-WHERE PU.enabled = 1;<br>
+SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,<br>
+CASE<br>
+    WHEN PP.recurrencyType = 1 THEN 'Mensual'<br>
+    WHEN PP.recurrencyType = 2 THEN 'Anual'<br>
+    WHEN PP.recurrencyType = 3 THEN 'Permanente' END 'Frecuencia de Cobro',<br>
+CASE<br>
+    WHEN PP.recurrencyType = 1 THEN TIMESTAMPDIFF(MONTH, PPE.adquisitionDate, NOW())*PP.amount<br>
+    WHEN PP.recurrencyType = 2 THEN TIMESTAMPDIFF(YEAR, PPE.adquisitionDate, NOW())*PP.amount<br>
+    WHEN PP.recurrencyType = 3 THEN PP.amount END 'Total Pagado'<br>
+FROM Payment_Users PU<br>
+INNER JOIN Payment_Personas PS ON PU.personID= PS.personID<br>
+INNER JOIN Payment_ContactInfoPerson CIP ON (PS.personID = CIP.personID AND CIP.contacInfoTypeID = 1)<br>
+INNER JOIN Payment_UserAdresses UA ON PU.userid = UA.userid<br>
+INNER JOIN Payment_Adresses AD ON UA.adressid = AD.adressid<br>
+INNER JOIN Payment_Cities CY ON CY.cityid = AD.cityid<br>
+INNER JOIN Payment_States ST ON ST.stateid = CY.cityid<br>
+INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid<br>
+INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid<br>
+INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid<br>
+INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid<br>
+WHERE PU.enabled = 1;<br><br>
    **Datatable**:
 | Nombre               | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
 |----------------------|--------------|--------------------------------------|-------------------------|---------------------|---------|------------|--------------|
@@ -73,8 +72,51 @@ WHERE PU.enabled = 1;<br>
 | Ashley Robinson      | Estados Unidos | ashley.robinson23@example.com       | 2023-12-25 00:00:00     | Empresarial         | 25500.00 | Mensual    | 357000.00    |
 | Donna Thompson       | Reino Unido  | donna.thompson81@example.com         | 2024-04-01 00:00:00     | Empresarial         | 25500.00 | Mensual    | 280500.00    |
 | William Jones        | España       | william.jones28@example.com          | 2023-03-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 612000.00    |
+<br>
+2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros) <br>
+   **Código MySQL**:
 
-
+SELECT 
+    CONCAT(p.firstName, ' ', p.lastName) AS 'Nombre Completo',<br>
+    cip.value AS Email,<br>
+    s.description AS Suscripcion,<br>
+    ppe.expirationDate AS 'Fecha de Expiracion',<br>
+    DATEDIFF(ppe.expirationDate, CURDATE()) AS 'Dias Restantes'<br>
+FROM <br>
+    Payment_PlanPerEntity ppe<br>
+INNER JOIN <br>
+    Payment_Users u ON ppe.userid = u.userid<br>
+INNER JOIN <br>
+    Payment_Personas p ON u.personID = p.personID<br>
+INNER JOIN <br>
+    Payment_ContactInfoPerson cip ON p.personID = cip.personID AND cip.contacInfoTypeId = 1<br>
+INNER JOIN <br>
+    Payment_PlanPrices pp ON ppe.planPriceid = pp.planPriceid<br>
+INNER JOIN <br>
+    Payment_Subscriptions s ON pp.subscriptionid = s.subscriptionid<br>
+WHERE <br>
+    ppe.expirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 15 DAY)<br>
+    AND ppe.enabled = 1<br>
+ORDER BY <br>
+    'Dias Restantes' ASC;<br><br>
+       **Datatable**:
+| Nombre Completo      | Email                           | Suscripción        | Fecha de Expiración     | Días Restantes |
+|----------------------|---------------------------------|--------------------|-------------------------|----------------|
+| Sandra Johnson       | sandra.johnson@example.com      | Personal           | 2025-03-25 00:00:00     | 1              |
+| John Anderson        | john.anderson0@example.com      | Personal           | 2025-03-25 00:00:00     | 1              |
+| Jessica Williams     | jessica.williams26@example.com  | Personal           | 2025-03-25 00:00:00     | 1              |
+| Charles Davis        | charles.davis96@example.com     | Personal           | 2025-03-25 00:00:00     | 1              |
+| Karen Williams       | karen.williams92@example.com    | Empresarial        | 2025-03-28 00:00:00     | 4              |
+| Donald Young         | donald.young8@example.com       | Personal           | 2025-03-28 00:00:00     | 4              |
+| Michael King         | michael.king64@example.com      | Familiar           | 2025-03-29 00:00:00     | 5              |
+| Donna Thompson       | donna.thompson81@example.com    | Empresarial        | 2025-04-01 00:00:00     | 8              |
+| Sandra Lewis         | sandra.lewis62@example.com      | Suscripción Gratis | 2025-04-02 00:00:00     | 9              |
+| Jessica Jackson      | jessica.jackson@example.com     | Personal           | 2025-04-02 00:00:00     | 9              |
+| James Walker         | james.walker31@example.com      | Empresarial        | 2025-04-02 00:00:00     | 9              |
+| Paul Young           | paul.young94@example.com        | Empresarial        | 2025-04-05 00:00:00     | 12             |
+| Mark Young           | mark.young32@example.com        | Empresarial        | 2025-04-06 00:00:00     | 13             |
+| Ashley Robinson      | ashley.robinson23@example.com   | Empresarial        | 2025-04-07 00:00:00     | 14             |
+<br>
 **Lista de Entidades** (Actualizada)
 - Personas
 - Usuarios
