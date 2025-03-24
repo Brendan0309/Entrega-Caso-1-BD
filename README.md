@@ -11,7 +11,7 @@ Brendan Ramírez Campos
 	- Habilitado
 	- Compañías (Opcional)
 - Información de contacto del usuario 
-	- Tipo (correo, teléfono, etc)
+	- Tipo (correo, teléfono, fax)
 	- Última actualización
 - Países
 - States
@@ -43,7 +43,7 @@ Brendan Ramírez Campos
 - Dirección
 - Tipo servicio
 - Servicios de Pago
-- Vinculación de APIs (PayPal, Apple Pay, etc)
+- Vinculación de APIs (PayPal, Apple Pay)
 	- Tokens (De acceso y de autenticación)
 	- Tiempo de expiración
 	- Código de Status
@@ -75,7 +75,7 @@ Brendan Ramírez Campos
 - Estado (Exitosa/Fallida)
 - Detalle
 - Monto
-- Fechas (pagos, historial, cobros, notificaciones, etc)
+- Fechas (tanto para pagos como para historial, cobros y notificaciones)
 - Cantidad de Pagos
 - Cantidad de Transferencias.
 - Confirmación pagos	
@@ -99,7 +99,7 @@ Brendan Ramírez Campos
 	- Valores de la referencia
 	- Fuente
 	- Severidad
-- Media (fotos, audios, pdf, etc)
+- Media (fotos, audios, pdf, pdf de los transcripts)
 	- Tipo
 		- Nombre
 		- Reproductor
@@ -111,7 +111,7 @@ Brendan Ramírez Campos
 - Horarios
 	- Nombre
 	- Recurrencia
-	- Posibles repeticiones (cada lunes, cada semana, etc)
+	- Posibles repeticiones (cada lunes, cada semana, cada mes)
 	- Posible siguiente ejecución
 - Idioma
 - Traduccion
