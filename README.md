@@ -117,6 +117,17 @@ Brendan Ramírez Campos
 - Traduccion
 - Slangs
 - Nombre
+- ScreenRecorder
+- ScreenEvents
+- AudioRecorder
+- AudioEvents
+- SyncScreenAudio
+- CuePoints
+- Transcriptions
+- IA
+- IA Conection
+- IA Responses
+- IA Processing
 
 **Documetación General del Proyecto**
 Documentación sobre entidades principales
