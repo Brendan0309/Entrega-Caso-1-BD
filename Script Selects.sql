@@ -200,3 +200,16 @@ LIMIT 15;
 --"Michelle Flores",11,12,"2025-03-24 16:41:25","Más activo"
 --"Nancy Wilson",12,12,"2025-03-25 15:44:25","Más activo"
 --"Donna Thompson",15,12,"2025-03-24 20:24:25","Más activo"
+
+-- Cuarto Select
+SELECT COUNT(1) 'Casos Detectados', AE.name 
+FROM Payment_AIProcessingLogs AP
+INNER JOIN Payment_ScreenAudioSync SAS ON AP.syncID = SAS.syncID
+INNER JOIN Payment_AudioTranscripts ATS ON SAS.transcriptionId = ATS.transcriptionId
+INNER JOIN Payment_AudioRecordings AR ON ATS.audioRecordingsID = AR.audioRecordingsID
+INNER JOIN Payment_AudioEvent AE ON AE.audioEventId = AR.audioEventId 
+WHERE AP.status = 'FAILED'
+AND AP.accuracyObtained < 70
+AND AP.createdAt > '2022-01-01 00:00:00' -- Desde el 2022 hasta la actualidad
+GROUP BY AE.name
+ORDER BY COUNT(1) DESC;
