@@ -69,21 +69,13 @@ INSERT INTO `PaymentAsistant`.`Payment_Currencies` (`name`, acronym, symbol) VAL
 INSERT INTO PaymentAsistant.Payment_CurrencyConversions (
     startdate, enddate, exchangeRate, enabled, currentExchangeRate, currencyid_source, currencyid_destiny
 ) VALUES 
-    -- CRC to USD
     ('2023-10-01', '2023-10-31', 0.001333, 1, 1, 3, 1),
-    -- CRC to EUR
     ('2023-10-01', '2023-10-31', 0.001200, 1, 1, 3, 2),
-    -- CRC to GBP
     ('2023-10-01', '2023-10-31', 0.001100, 1, 1, 3, 4),
-    -- CRC to JPY
     ('2023-10-01', '2023-10-31', 0.150000, 1, 1, 3, 5),
-    -- USD to CRC
     ('2023-10-01', '2023-10-31', 750.000000, 1, 1, 1, 3),
-    -- EUR to CRC
     ('2023-10-01', '2023-10-31', 830.000000, 1, 1, 2, 3),    
-    -- GBP to CRC
     ('2023-10-01', '2023-10-31', 900.000000, 1, 1, 4, 3),
-    -- JPY TO CRC
     ('2023-10-01', '2023-10-31', 6.666667, 1, 1, 5, 3); 
 
 INSERT INTO `PaymentAsistant`.`Payment_Countries`(`name`, currencyid) VALUES
@@ -182,24 +174,30 @@ DELIMITER ;
 CALL PopulateMediaFiles();
 
 
-INSERT INTO Payment_AudioEvent(name, enabled) VALUES
-('Payment Registration', 1),
-('New Transaction', 1),
-('Action Cancelation', 1),
-('Clarification', 1),
-('Payment Confirmation',1),
-('Source Provided',1),
-('Destination Provided',1),
-('IBAN Acccount Provided', 1),
-('Card Number Provided', 1),
-('Prompt repetition', 1),
-('Unknown Response', 1);
 DELIMITER //
+CREATE PROCEDURE PopulateAudioEvents()
+BEGIN
+    SET @rowNumber = 40;
+    WHILE @rowNumber > 0 DO
+	SET @name = ELT(1 + FLOOR(RAND() * 40),
+            'Error transcripción', 'Falsa detección voz', 'Ruido no filtrado', 'Desincronización AV', 'Corte de audio', 'Eco residual',
+            'Micrófono saturado', 'Silencio erróneo', 'Omite palabras', 'Confunde homófonos', 'Fallo diarización', 'Latencia alta', 'Audio con artefactos', 'Sibilancia fuerte',
+            'Clonación voz ilegal', 'Modelo sobreajustado', 'Muestreo incompatible', 'Metadatos erróneos', 'Sesgo en reconocimiento', 'Falso positivo', 'Timestamp incorrecto',
+            'Transcripción incompleta', 'Interferencia eléctrica', 'Audio distorsionado', 'Voces solapadas', 'Idioma incorrecto', 'Volumen irregular', 'Pérdida de paquetes',
+            'Procesamiento lento', 'Cancelación ruido falla', 'Modulación artificial', 'Error en tono', 'Frecuencia perdida', 'Armónicos falsos', 'Aliasing audio',
+            'Cuantización mala', 'Normalización fallida', 'Rango dinámico pobre', 'Remuestreo defectuoso', 'Fase invertida', 'BPM incorrecto', 'Loop no detectado'
+        );
+        INSERT INTO Payment_AudioEvent (name, enabled) VALUES (@name, 1);
+        SET @rowNumber = @rowNumber-1;
+	END WHILE;
+END //
+DELIMITER ;
+CALL PopulateAudioEvents();
 
 	
 CREATE PROCEDURE PopulateCuePoints()
 BEGIN
-    SET @rowNumbers = 100;
+    SET @rowNumbers = 200;
     WHILE @rowNumbers > 0 DO
 	SET @startTimestamp = NOW() - INTERVAL FLOOR(RAND() * 365) DAY - INTERVAL FLOOR(RAND() * 24) HOUR - INTERVAL FLOOR(RAND() * 60) MINUTE - INTERVAL FLOOR(RAND() * 60) SECOND;
 	SET @endTimestamp = DATE_ADD(@startTimestamp, INTERVAL FLOOR(1+RAND()*60) SECOND);
@@ -216,7 +214,7 @@ CALL PopulateCuePoints();
 DELIMITER //
 CREATE PROCEDURE PopulateAudioRecordings()
 BEGIN
-	SET @rowNumbers = 100;
+	SET @rowNumbers = 200;
 	WHILE @rowNumbers > 0 DO
 	SET @userid = FLOOR(1+RAND()*40);
         SET @audioId = FLOOR(1+RAND()*300);
@@ -242,11 +240,10 @@ END//
 DELIMITER ;
 CALL PopulateAudioRecordings();
 
-
 DELIMITER //
 CREATE PROCEDURE PopulateAudioTranscripts()
 BEGIN
-    SET @rowNumbers = 100;
+    SET @rowNumbers = 200;
     WHILE @rowNumbers > 0 DO
 	SET @genTime = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 800) DAY);
 	SET @genTime = DATE_ADD(DATE(@genTime), INTERVAL FLOOR(5 + RAND() * 9) HOUR); 
@@ -272,7 +269,6 @@ END//
 DELIMITER ;
 CALL PopulateAudioTranscripts();
 
-
 INSERT INTO Payment_ScreenEvents(name, enabled) VALUES
 	('Screen Loaded', 1),
 	('Payment Form Displayed', 1),
@@ -290,10 +286,10 @@ INSERT INTO Payment_ScreenEvents(name, enabled) VALUES
 	('Retry Button Clicked', 1),
 	('Processing Screen Displayed', 1);
 
-	
+DELIMITER //
 CREATE PROCEDURE PopulateScreenRecordings()
 BEGIN
-    SET @rowNumber = 100;
+    SET @rowNumber = 200;
     WHILE @rowNumber > 0 DO
 	SET @userid = FLOOR(1+RAND()*40);
 	SET @moduleid = FLOOR(1+RAND()*4);
@@ -311,7 +307,7 @@ CALL PopulateScreenRecordings();
 DELIMITER //
 CREATE PROCEDURE PopulateScreenAudioSync()
 BEGIN
-	SET @rowNumbers = 100;
+    SET @rowNumbers = 200;
     WHILE @rowNumbers > 0 DO
 		INSERT INTO Payment_ScreenAudioSync(screenRecordingsId, transcriptionId)
         VALUES (@rowNumbers, @rowNumbers);
@@ -346,7 +342,7 @@ BEGIN
 		'AI is undergoing maintenance; try again later', 'Error: AI could not interpret your input', 'AI is overloaded; please reduce request frequency',
 		'Error: AI service is temporarily down');
         INSERT INTO Payment_AIProcessingLogs(syncID, utilizedPrompt, processingTime, status, createdAt, api_key, iterationNumber, accuracyObtained, generatedResponse)
-        VALUES (FLOOR(1+RAND()*100), 'Categorize the following user input into the next stage of program flow', @processingTime, @status, @createdTime, @apikey, 0, @accuracy, @generatedResponse);
+        VALUES (FLOOR(1+RAND()*200), 'Categorize the following user input into the next stage of program flow', @processingTime, @status, @createdTime, @apikey, 0, @accuracy, @generatedResponse);
         SET @rowNumbers = @rowNumbers-1;
 	END WHILE;
 END //
