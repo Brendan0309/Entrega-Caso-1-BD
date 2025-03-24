@@ -1,7 +1,7 @@
 DELIMITER //
 CREATE PROCEDURE PopulatePeople()
 BEGIN
-	SET @numberRows = 40;
+    SET @numberRows = 40;
     SET @firstname = "";
     SET @lastname = "";
     SET  @birthdate = NULL;
@@ -173,6 +173,48 @@ INSERT INTO Payment_ScreenEvents(name, enabled) VALUES
 	('Back Button Clicked', 1),
 	('Retry Button Clicked', 1),
 	('Processing Screen Displayed', 1);
+INSERT INTO Payment_Currencies (name, acronym, symbol) VALUES
+('Dólar Estadounidense', 'USD', '$'),
+('Euro', 'EUR', '€'),
+('Colón', 'CRC', '₡'),
+('Libra Esterlina', 'GBP', '£'),
+('Yen Japonés', 'JPY', '¥');
+INSERT INTO Payment_Countries(name, currencyid) VALUES
+('Estados Unidos', 1),
+('Costa Rica', 3),
+('Reino Unido', 4),
+('Japón', 5),
+('España', 2),
+('Francia', 2);
+INSERT INTO Payment_Languages (name, culture, countryid)
+VALUES 
+('English USA', 'EN', 1),
+('English UK', 'EN-UK', 3),
+('Español Costa Rica', 'CRC', 2),
+('Frances', 'FR',  6),
+('Japones','JP', 4);
+INSERT INTO Payment_Modules(name, languageId) VALUES
+('Menu Principal', 3),
+('Registrar Pago', 3),
+('Registrar Metodo Pago', 3),
+('Agendar Pago', 3);
+DROP PROCEDURE PopulateScreenRecordings;
+DELIMITER //
+CREATE PROCEDURE PopulateScreenRecordings()
+BEGIN
+    SET @rowNumber = 100;
+    WHILE @rowNumber > 0 DO
+	SET @userid = FLOOR(1+RAND()*40);
+	SET @moduleid = FLOOR(1+RAND()*4);
+        SET @cuepoint = FLOOR(1+RAND()*100);
+        SET @screenEvent = FLOOR(1+RAND()*14);
+        INSERT INTO Payment_ScreenRecordings(userid, moduleid, taskDescription, objectName, timeline, tabActions, cuePointID, applicationid, value, screenEventid, uiPath)
+        VALUES (@userid, @moduleid, '', '', '{}', '{}', @cuepoint, '', NULL, @screenEvent, NULL);
+        SET @rowNumber = @rowNumber-1;
+   END WHILE;
+END //
+DELIMITER ;
+CALL PopulateScreenRecordings();
 
 	
 
