@@ -7,6 +7,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema PaymentAsistant
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `PaymentAsistant` ;
 
 -- -----------------------------------------------------
 -- Schema PaymentAsistant
@@ -194,7 +195,6 @@ CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_UserAdresses` (
   `enabled` BIT NOT NULL,
   `userid` INT NOT NULL,
   `adressid` INT NOT NULL,
-  PRIMARY KEY (`userid`, `adressid`),
   INDEX `fk_Payment_UserAdresses_Payment_Users1_idx` (`userid` ASC) VISIBLE,
   INDEX `fk_Payment_UserAdresses_Payment_Adresses1_idx` (`adressid` ASC) VISIBLE,
   CONSTRAINT `fk_Payment_UserAdresses_Payment_Users1`
@@ -265,126 +265,17 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `PaymentAsistant`.`payment_MetodosDePago`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`payment_MetodosDePago` (
-  `metodoId` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(17) NOT NULL,
-  `apiURL` VARCHAR(60) NOT NULL,
-  `secretKey` VARBINARY(128) NOT NULL,
-  `key` VARBINARY(128) NOT NULL,
-  `logoIconURL` VARCHAR(45) NOT NULL,
-  `enabled` BIT NOT NULL,
-  `templateJSON` JSON NOT NULL,
-  PRIMARY KEY (`metodoId`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `PaymentAsistant`.`Payment_MediosDisponibles`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_MediosDisponibles` (
-  `pagoMedioId` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(30) NOT NULL,
-  `token` VARBINARY(128) NOT NULL,
-  `expTokenDate` DATE NOT NULL,
-  `maskAccount` VARCHAR(45) NOT NULL,
-  `callbackURLget` VARCHAR(45) NOT NULL,
-  `callbackPost` VARCHAR(45) NOT NULL,
-  `callbackredirect` VARCHAR(45) NOT NULL,
-  `personID` INT NOT NULL,
-  `metodoId` INT NOT NULL,
-  `configurationJSON` JSON NOT NULL,
-  PRIMARY KEY (`pagoMedioId`),
-  INDEX `fk_payment_mediosDisponibles_payment_personas1_idx` (`personID` ASC) VISIBLE,
-  INDEX `fk_payment_mediosDisponibles_payment_MetodosDePago1_idx` (`metodoId` ASC) VISIBLE,
-  CONSTRAINT `fk_payment_mediosDisponibles_payment_personas1`
-    FOREIGN KEY (`personID`)
-    REFERENCES `PaymentAsistant`.`Payment_Personas` (`personID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_mediosDisponibles_payment_MetodosDePago1`
-    FOREIGN KEY (`metodoId`)
-    REFERENCES `PaymentAsistant`.`payment_MetodosDePago` (`metodoId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `PaymentAsistant`.`Payment_Pagos`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_Pagos` (
-  `pagoId` BIGINT NOT NULL AUTO_INCREMENT,
-  `pagoMedioId` INT NOT NULL,
-  `metodoId` INT NOT NULL,
-  `personID` INT NOT NULL,
-  `monto` FLOAT NOT NULL,
-  `actualMonto` FLOAT NULL,
-  `result` VARBINARY(300) NULL,
-  `auth` VARBINARY(300) NULL,
-  `chargetoken` VARBINARY(128) NULL,
-  `descripcion` VARCHAR(100) NULL,
-  `error` VARCHAR(60) NULL,
-  `fecha` DATETIME NULL,
-  `checksum` VARBINARY(128) NOT NULL,
-  `exchangeRate` FLOAT NOT NULL,
-  `convertedAmount` FLOAT NOT NULL,
-  `moduleid` TINYINT(8) NOT NULL,
-  `currencyid` INT NOT NULL,
-  PRIMARY KEY (`pagoId`),
-  INDEX `fk_payment_pagos_payment_mediosDisponibles1_idx` (`pagoMedioId` ASC) VISIBLE,
-  INDEX `fk_payment_pagos_payment_MetodosDePago1_idx` (`metodoId` ASC) VISIBLE,
-  INDEX `fk_payment_pagos_payment_personas1_idx` (`personID` ASC) VISIBLE,
-  INDEX `fk_payment_pagos_Payment_Modules1_idx` (`moduleid` ASC) VISIBLE,
-  INDEX `fk_payment_pagos_Payment_Currencies1_idx` (`currencyid` ASC) VISIBLE,
-  CONSTRAINT `fk_payment_pagos_payment_mediosDisponibles1`
-    FOREIGN KEY (`pagoMedioId`)
-    REFERENCES `PaymentAsistant`.`Payment_MediosDisponibles` (`pagoMedioId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_pagos_payment_MetodosDePago1`
-    FOREIGN KEY (`metodoId`)
-    REFERENCES `PaymentAsistant`.`payment_MetodosDePago` (`metodoId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_pagos_payment_personas1`
-    FOREIGN KEY (`personID`)
-    REFERENCES `PaymentAsistant`.`Payment_Personas` (`personID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_pagos_Payment_Modules1`
-    FOREIGN KEY (`moduleid`)
-    REFERENCES `PaymentAsistant`.`Payment_Modules` (`moduleid`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_payment_pagos_Payment_Currencies1`
-    FOREIGN KEY (`currencyid`)
-    REFERENCES `PaymentAsistant`.`Payment_Currencies` (`currencyid`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `PaymentAsistant`.`Payment_Modules`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_Modules` (
   `moduleid` TINYINT(8) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(40) NOT NULL,
   `languageid` INT NOT NULL,
-  `payment_pagos_pagoId` BIGINT NOT NULL,
   PRIMARY KEY (`moduleid`),
   INDEX `fk_Payment_Modules_Payment_Languages1_idx` (`languageid` ASC) VISIBLE,
-  INDEX `fk_Payment_Modules_payment_pagos1_idx` (`payment_pagos_pagoId` ASC) VISIBLE,
   CONSTRAINT `fk_Payment_Modules_Payment_Languages1`
     FOREIGN KEY (`languageid`)
     REFERENCES `PaymentAsistant`.`Payment_Languages` (`languageid`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Payment_Modules_payment_pagos1`
-    FOREIGN KEY (`payment_pagos_pagoId`)
-    REFERENCES `PaymentAsistant`.`Payment_Pagos` (`pagoId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -507,6 +398,53 @@ CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_Schedules` (
   `repetitions` TINYINT NULL,
   `endDate` DATE NULL,
   PRIMARY KEY (`scheduleid`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `PaymentAsistant`.`payment_MetodosDePago`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`payment_MetodosDePago` (
+  `metodoId` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(17) NOT NULL,
+  `apiURL` VARCHAR(60) NOT NULL,
+  `secretKey` VARBINARY(128) NOT NULL,
+  `key` VARBINARY(128) NOT NULL,
+  `logoIconURL` VARCHAR(45) NOT NULL,
+  `enabled` BIT NOT NULL,
+  `templateJSON` JSON NOT NULL,
+  PRIMARY KEY (`metodoId`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `PaymentAsistant`.`Payment_MediosDisponibles`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_MediosDisponibles` (
+  `pagoMedioId` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(30) NOT NULL,
+  `token` VARBINARY(128) NOT NULL,
+  `expTokenDate` DATE NOT NULL,
+  `maskAccount` VARCHAR(45) NOT NULL,
+  `callbackURLget` VARCHAR(45) NOT NULL,
+  `callbackPost` VARCHAR(45) NOT NULL,
+  `callbackredirect` VARCHAR(45) NOT NULL,
+  `personID` INT NOT NULL,
+  `metodoId` INT NOT NULL,
+  `configurationJSON` JSON NOT NULL,
+  PRIMARY KEY (`pagoMedioId`),
+  INDEX `fk_payment_mediosDisponibles_payment_personas1_idx` (`personID` ASC) VISIBLE,
+  INDEX `fk_payment_mediosDisponibles_payment_MetodosDePago1_idx` (`metodoId` ASC) VISIBLE,
+  CONSTRAINT `fk_payment_mediosDisponibles_payment_personas1`
+    FOREIGN KEY (`personID`)
+    REFERENCES `PaymentAsistant`.`Payment_Personas` (`personID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_payment_mediosDisponibles_payment_MetodosDePago1`
+    FOREIGN KEY (`metodoId`)
+    REFERENCES `PaymentAsistant`.`payment_MetodosDePago` (`metodoId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
@@ -687,6 +625,54 @@ CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_ContactInfoPerson` (
   CONSTRAINT `fk_payment_contactInfoPerson_payment_MetodosDePago1`
     FOREIGN KEY (`metodoId`)
     REFERENCES `PaymentAsistant`.`payment_MetodosDePago` (`metodoId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `PaymentAsistant`.`Payment_Pagos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_Pagos` (
+  `pagoId` BIGINT NOT NULL AUTO_INCREMENT,
+  `pagoMedioId` INT NOT NULL,
+  `metodoId` INT NOT NULL,
+  `personID` INT NOT NULL,
+  `monto` FLOAT NOT NULL,
+  `actualMonto` FLOAT NULL,
+  `result` VARBINARY(300) NULL,
+  `auth` VARBINARY(300) NULL,
+  `chargetoken` VARBINARY(128) NULL,
+  `descripcion` VARCHAR(100) NULL,
+  `error` VARCHAR(60) NULL,
+  `fecha` DATETIME NULL,
+  `checksum` VARBINARY(128) NOT NULL,
+  `exchangeRate` FLOAT NOT NULL,
+  `convertedAmount` FLOAT NOT NULL,
+  `currencyid` INT NOT NULL,
+  PRIMARY KEY (`pagoId`),
+  INDEX `fk_payment_pagos_payment_mediosDisponibles1_idx` (`pagoMedioId` ASC) VISIBLE,
+  INDEX `fk_payment_pagos_payment_MetodosDePago1_idx` (`metodoId` ASC) VISIBLE,
+  INDEX `fk_payment_pagos_payment_personas1_idx` (`personID` ASC) VISIBLE,
+  INDEX `fk_payment_pagos_Payment_Currencies1_idx` (`currencyid` ASC) VISIBLE,
+  CONSTRAINT `fk_payment_pagos_payment_mediosDisponibles1`
+    FOREIGN KEY (`pagoMedioId`)
+    REFERENCES `PaymentAsistant`.`Payment_MediosDisponibles` (`pagoMedioId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_payment_pagos_payment_MetodosDePago1`
+    FOREIGN KEY (`metodoId`)
+    REFERENCES `PaymentAsistant`.`payment_MetodosDePago` (`metodoId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_payment_pagos_payment_personas1`
+    FOREIGN KEY (`personID`)
+    REFERENCES `PaymentAsistant`.`Payment_Personas` (`personID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_payment_pagos_Payment_Currencies1`
+    FOREIGN KEY (`currencyid`)
+    REFERENCES `PaymentAsistant`.`Payment_Currencies` (`currencyid`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
