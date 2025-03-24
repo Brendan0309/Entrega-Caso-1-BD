@@ -1,69 +1,25 @@
 -- Primer Select
-SELECT 
-    CONCAT(p.firstName, ' ', p.lastName) AS nombre_completo,
-    cip.value AS email,
-    pc.name AS pais,
-    SUM(pp.amount) AS total_pagado_crc
-FROM 
-    Payment_Users u
-JOIN 
-    Payment_Personas p ON u.personID = p.personID
-LEFT JOIN 
-    Payment_ContactInfoPerson cip ON p.personID = cip.personID AND cip.contacInfoTypeId = 1
-LEFT JOIN 
-    Payment_UserAdresses ua ON u.userid = ua.userid
-LEFT JOIN 
-    Payment_Adresses a ON ua.adressid = a.adressid
-LEFT JOIN 
-    Payment_Cities ci ON a.cityid = ci.cityid
-LEFT JOIN 
-    Payment_States s ON ci.stateid = s.stateid
-LEFT JOIN 
-    Payment_Countries pc ON s.countryid = pc.countryid
-JOIN 
-    Payment_PlanPerEntity ppe ON u.userid = ppe.userid
-JOIN 
-    Payment_PlanPrices pp ON ppe.planPriceid = pp.planPriceid
-WHERE 
-    u.enabled = 1
-    AND ppe.adquisitionDate >= '2024-01-01'
-    AND ppe.adquisitionDate <= CURDATE()
-GROUP BY 
-    p.personID, nombre_completo, email, pais
-HAVING 
-    COUNT(ppe.planPerPersonid) > 0
-ORDER BY 
-    total_pagado_crc DESC;
-
---Resultados
---nombre_completo,email,pais,total_pagado_crc
---"Kimberly Thompson",kimberly.thompson@example.com,Japón,129.96
---"Kimberly Thompson",kimberly.thompson@example.com,Francia,129.96
---"Patricia Allen",patricia.allen@example.com,"Reino Unido",109.97
---"Charles Gonzalez",charles.gonzalez14@example.com,"Costa Rica",99.98
---"Linda Martin",linda.martin@example.com,"Costa Rica",99.96
---"Thomas Perez",thomas.perez@example.com,"Reino Unido",99.95
---"Thomas Perez",user17@example.com,"Reino Unido",99.95
---"Joseph Moore",user13@example.com,Japón,69.98
---"Joseph Moore",user13@example.com,"Costa Rica",69.98
---"Joseph Moore",joseph.moore79@example.com,Japón,69.98
---"Joseph Moore",joseph.moore79@example.com,"Costa Rica",69.98
---"Susan Martin",susan.martin39@example.com,Japón,49.99
---"Steven Lopez",steven.lopez4@example.com,"Costa Rica",49.99
---"Michelle Wilson",michelle.wilson25@example.com,España,49.99
---"Nancy Wilson",nancy.wilson@example.com,"Costa Rica",49.99
---"Michelle Flores",michelle.flores@example.com,"Reino Unido",39.98
---"Michelle Flores",michelle.flores@example.com,"Costa Rica",39.98
---"Donna Thompson",donna.thompson22@example.com,España,39.98
---"Richard Wright",richard.wright85@example.com,España,29.98
---"Richard Wright",user15@example.com,España,29.98
---"James Miller",james.miller10@example.com,"Estados Unidos",19.99
---"Steven King",steven.king@example.com,"Estados Unidos",19.99
---"James Robinson",james.robinson24@example.com,"Costa Rica",19.99
---"Mark Wright",mark.wright68@example.com,"Reino Unido",9.99
---"Sandra Wright",sandra.wright43@example.com,España,9.99
---"Sandra Gonzalez",sandra.gonzalez28@example.com,Japón,0.00
-
+SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,
+CASE
+	WHEN PP.recurrencyType = 1 THEN 'Mensual'
+    WHEN PP.recurrencyType = 2 THEN 'Anual'
+    WHEN PP.recurrencyType = 3 THEN 'Permanente' END 'Frecuencia de Cobro',
+CASE
+	WHEN PP.recurrencyType = 1 THEN TIMESTAMPDIFF(MONTH, PPE.adquisitionDate, NOW())*PP.amount
+    WHEN PP.recurrencyType = 2 THEN TIMESTAMPDIFF(YEAR, PPE.adquisitionDate, NOW())*PP.amount
+    WHEN PP.recurrencyType = 3 THEN PP.amount END 'Total Pagado'
+FROM Payment_Users PU
+INNER JOIN Payment_Personas PS ON PU.personID= PS.personID
+INNER JOIN Payment_ContactInfoPerson CIP ON (PS.personID = CIP.personID AND CIP.contacInfoTypeID = 1)
+INNER JOIN Payment_UserAdresses UA ON PU.userid = UA.userid
+INNER JOIN Payment_Adresses AD ON UA.adressid = AD.adressid
+INNER JOIN Payment_Cities CY ON CY.cityid = AD.cityid
+INNER JOIN Payment_States ST ON ST.stateid = CY.cityid
+INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid
+INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid
+INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid
+INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid
+WHERE PU.enabled = 1;
 
 -- Segundo select
 SELECT 
