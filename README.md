@@ -2,17 +2,15 @@
 
 Nombre de los integrantes:
 
-Julián Castro Barrantes
+-Julián Castro Barrantes
 
-Brendan Ramírez Campos
+-Brendan Ramírez Campos
 
 
 Diseño Actualizado de la base de datos: [AvanceFinal.pdf](./AvanceFinal.pdf)
-Script de Creación de la base de datos:
-
-	- ARCHIVO .MD: [ScriptCreacion.md](./ScriptCreacion.md)
- 
- 	- ARCHIVO .SQL: [ScriptCreacion.sql](./ScriptCreacion.sql)
+Script de Creación de la base de datos:<br>
+	- ARCHIVO .MD: [ScriptCreacion.md](./ScriptCreacion.md)<br>
+ 	- ARCHIVO .SQL: [ScriptCreacion.sql](./ScriptCreacion.sql)<br>
 
 
 **Lista de Entidades** (Actualizada)
