@@ -1,3 +1,4 @@
+USE PaymentAsistant;
 DELIMITER //
 CREATE PROCEDURE PopulatePeople()
 BEGIN
@@ -249,47 +250,11 @@ DELIMITER //
 
 CREATE PROCEDURE PopulateUserAdresses()
 BEGIN
-    DECLARE i INT DEFAULT 1;
-    DECLARE max_users INT;
-    DECLARE max_adresses INT;
-    DECLARE user_id INT;
-    DECLARE adress_id INT;
-    DECLARE attempts INT;
-    
-    SELECT COUNT(*) INTO max_users FROM Payment_Users;
-    SELECT COUNT(*) INTO max_adresses FROM Payment_Adresses;
-    
-    SET i = 1;
-    REPEAT
-
-        IF NOT EXISTS (SELECT 1 FROM Payment_UserAdresses WHERE userid = i AND adressid = i) THEN
-
-            INSERT INTO Payment_UserAdresses (enabled, userid, adressid)
-            VALUES (1, i, i);
-        END IF;
-        
-        SET i = i + 1;
-    UNTIL i > LEAST(max_users, max_adresses) END REPEAT;
-    
-    SET i = 1;
-    WHILE i <= max_users AND max_adresses > max_users DO
-        IF RAND() > 0.8 THEN 
-            SET attempts = 0;
-            
-            REPEAT
-                SET adress_id = FLOOR(1 + RAND() * max_adresses);
-                SET attempts = attempts + 1;
-                
-            UNTIL NOT EXISTS (SELECT 1 FROM Payment_UserAdresses WHERE userid = i AND adressid = adress_id) 
-                  OR attempts > 10 END REPEAT;
-            
-            IF attempts <= 10 THEN
-                INSERT INTO Payment_UserAdresses (enabled, userid, adressid)
-                VALUES (1, i, adress_id);
-            END IF;
-        END IF;
-        
-        SET i = i + 1;
+	SET @rowNumbers = 40;
+    WHILE @rowNumbers > 0 DO
+		INSERT INTO Payment_UserAdresses (enabled, userid, adressid)
+        VALUES (1, @rowNumbers, 1+(@rowNumbers%20));
+        SET @rowNumbers = @rowNumbers-1;
     END WHILE;
 END //
 
@@ -310,9 +275,9 @@ MODIFY COLUMN endDate DATE NULL;
 
 INSERT INTO `PaymentAsistant`.`Payment_PlanPrices` (planPriceId, amount, recurrencyType, postTime, endDate, `current`, subscriptionid) VALUES
 (1, 0, 1, CURDATE(), NULL , 1, 1),  -- Gratis
-(2, 9.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 2),  -- personal
-(3, 19.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 3),  -- familiar
-(4, 49.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 4);  -- empresarial
+(2, 5500, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 2),  -- personal
+(3, 10500, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 3),  -- familiar
+(4, 25500, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 4);  -- empresarial
 
 DELIMITER //
 
@@ -340,7 +305,6 @@ BEGIN
     SET schedule_id = LAST_INSERT_ID();
     
     WHILE i <= 40 DO
-        SET random_user = FLOOR(1 + RAND() * user_count);
         SET random_plan = FLOOR(1 + RAND() * plan_count);
         SET random_days = FLOOR(1 + RAND() * 365);
         
@@ -371,7 +335,7 @@ BEGIN
             1,
             random_plan,
             FLOOR(1 + RAND() * 3), 
-            random_user,
+            i,
             NULL,
             exp_date
         );
@@ -381,7 +345,7 @@ BEGIN
     
 END //
 
-DELIMITER;
+DELIMITER ;
 CALL PopulatePlanPerEntity();
 
 INSERT INTO `PaymentAsistant`. `Payment_Languages` (`name`, culture, countryid)
@@ -390,8 +354,8 @@ VALUES
 ('Frances', 'FR',  6),
 ('Japones','JP', 4);
 
-INSERT INTO `PaymentAsistant`.`Payment_MediosDisponibles`
-    (`name`, token, expTokenDate, maskAccount, callbackURLget, 
+INSERT INTO Payment_MediosDisponibles
+    (name, token, expTokenDate, maskAccount, callbackURLget, 
     callbackPost, callbackredirect, personID, metodoId, configurationJSON) 
 VALUES 
     ('Visa', UNHEX('A1B2C3D4E5F6'), '2025-12-31', '**** **** **** 1234', 'https://example.com/getVisa', 
@@ -401,7 +365,7 @@ VALUES
     ('PayPal', UNHEX('ABCDEF1234567890'), '2025-10-15', 'paypal_user_01', 'https://example.com/getPP', 
     'https://example.com/postPP', 'https://example.com/redirectPP', 10, 1, '{"email": "user@example.com"}');
 
-INSERT INTO `PaymentAsistant`.`Payment_Modules`(`name`, languageId) VALUES
+INSERT INTO Payment_Modules(name, languageId) VALUES
 ('Menu Principal', 1),
 ('Registrar Pago', 1),
 ('Registrar Metodo Pago', 1),
@@ -414,7 +378,7 @@ BEGIN
     DECLARE i INT DEFAULT 1;
     DECLARE success BOOLEAN;
     
-    WHILE i <= 200 DO
+    WHILE i <= 50 DO
         SET success = FALSE;
         
         WHILE NOT success DO
@@ -615,7 +579,7 @@ END //
 DELIMITER ;
 CALL PopulateAudioEvents();
 
-	
+DELIMITER //
 CREATE PROCEDURE PopulateCuePoints()
 BEGIN
     SET @rowNumbers = 200;
@@ -771,8 +735,4 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulateAI();
-
-	
-
-
 
