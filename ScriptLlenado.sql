@@ -101,6 +101,62 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulateCuePoints();
+DELIMITER //
+CREATE PROCEDURE PopulateAudioRecordings()
+BEGIN
+	SET @rowNumbers = 100;
+	WHILE @rowNumbers > 0 DO
+		SET @userid = FLOOR(1+RAND()*40);
+        SET @audioId = FLOOR(1+RAND()*300);
+        SET @audioEvent = FLOOR(1+RAND()*11);
+        SET @cluster = ELT(FLOOR(1+RAND()*5),
+			'{"clusterId": "cluster_006", "topic": "Cancel Subscription", "status": "Pending"}',
+            '{"clusterId": "cluster_004", "topic": "Failed Transaction", "status": "Resolved"}',
+            '{"clusterId": "cluster_005", "topic": "Password Reset", "status": "Resolved"}',
+            '{"clusterId": "cluster_010", "topic": "New Feature Feedback", "status": "Closed"}',
+            '{"clusterId": "cluster_011", "topic": "Account Security", "status": "Resolved"}');
+		SET @corrections = ELT(FLOOR(1+RAND()*5),
+			'{"correctionId": "correction_001", "type": "volumeAdjustment", "status": "Applied"}',
+            '{"correctionId": "correction_002", "type": "noiseReduction", "status": "Pending"}',
+            '{"correctionId": "correction_008", "type": "compression", "status": "Applied"}',
+            '{"correctionId": "correction_009", "type": "reverbAdjustment", "status": "Pending"}',
+            '{"correctionId": "correction_010", "type": "delayAdjustment", "status": "Applied"}'
+        );
+        INSERT INTO Payment_AudioRecordings (userid, audioId, communicationClusters, cuePointID, corrections, audioEventid)
+        VALUES (@userid, @audioId, @cluster, @rowNumbers, @corrections, @audioEvent);
+        SET @rowNumbers = @rowNumbers-1;
+	END WHILE;
+END//
+DELIMITER ;
+CALL PopulateAudioRecordings();
+DELIMITER //
+CREATE PROCEDURE PopulateAudioTranscripts()
+BEGIN
+    SET @rowNumbers = 100;
+    WHILE @rowNumbers > 0 DO
+	SET @genTime = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 800) DAY);
+	SET @genTime = DATE_ADD(DATE(@genTime), INTERVAL FLOOR(5 + RAND() * 9) HOUR); 
+	SET @genTime = DATE_ADD(@genTime, INTERVAL FLOOR(RAND() * 60) MINUTE);
+        SET @accuracy = 1+RAND()*99;
+        SET @detectedKeywords = ELT(FLOOR(1 + RAND() * 10),
+			'Confirm payment',          
+			'Cancel transaction',       
+			'Deny confirmation',        
+			'Repeat',                   
+			'Payment failed',           
+			'Proceed',   
+			'Reconfigure payment', 
+			'Wrong information',  
+			'Repeat account',            
+			'Request refund'          
+		);
+        INSERT INTO Payment_AudioTranscripts (description, createdAt, audioId, audioRecordingsID, accuracy, detectedKeywords, value)
+        VALUES ('Description unavailable', @genTime, @rowNumbers, @rowNumbers, @accuracy, @detectedKeywords, NULL);
+        SET @rowNumbers = @rowNumbers-1;
+	END WHILE;
+END//
+DELIMITER ;
+CALL PopulateAudioTranscripts();
 	
 
 
