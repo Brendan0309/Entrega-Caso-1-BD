@@ -13,8 +13,7 @@ Script de Creación de la base de datos:<br>
  	- ARCHIVO .SQL: [ScriptCreacion.sql](./ScriptCreacion.sql)<br>
 
 Script para Llenar la base de datos:<br>
-	-ARCHIVO .MD: [ScriptLlenado.md](./ScriptLlenado.md)<br>
-	-ARCHIVO .SQL: [ScriptLlenado.md](./ScriptLlenado.sql)<br>
+	-ARCHIVO .SQL: [ScriptLlenado.sql](./ScriptLlenado.sql)<br>
 
 
 **Lista de Entidades** (Actualizada)
