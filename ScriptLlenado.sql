@@ -157,6 +157,23 @@ BEGIN
 END//
 DELIMITER ;
 CALL PopulateAudioTranscripts();
+INSERT INTO Payment_ScreenEvents(name, enabled) VALUES
+	('Screen Loaded', 1),
+	('Payment Form Displayed', 1),
+	('Transaction Summary Displayed', 1),
+	('Cancel Button Clicked', 1),
+	('Help Button Clicked', 1),
+	('Confirmation Screen Displayed', 1),
+	('Source Account Selected', 1),
+	('Destination Account Selected', 1),
+	('IBAN Entered', 1),
+	('Card Number Entered', 1),
+	('Error Message Displayed', 1),
+	('Success Message Displayed', 1),
+	('Back Button Clicked', 1),
+	('Retry Button Clicked', 1),
+	('Processing Screen Displayed', 1);
+
 	
 
 
