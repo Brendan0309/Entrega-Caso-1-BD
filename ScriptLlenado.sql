@@ -600,7 +600,7 @@ CREATE PROCEDURE PopulateAudioEvents()
 BEGIN
     SET @rowNumber = 40;
     WHILE @rowNumber > 0 DO
-	SET @name = ELT(@rowNumber),
+	SET @name = ELT(@rowNumber,
             'Error transcripción', 'Falsa detección voz', 'Ruido no filtrado', 'Desincronización AV', 'Corte de audio', 'Eco residual',
             'Micrófono saturado', 'Silencio erróneo', 'Omite palabras', 'Confunde homófonos', 'Fallo diarización', 'Latencia alta', 'Audio con artefactos', 'Sibilancia fuerte',
             'Clonación voz ilegal', 'Modelo sobreajustado', 'Muestreo incompatible', 'Metadatos erróneos', 'Sesgo en reconocimiento', 'Falso positivo', 'Timestamp incorrecto',
@@ -639,7 +639,9 @@ BEGIN
 	WHILE @rowNumbers > 0 DO
 	SET @userid = FLOOR(1+RAND()*40);
         SET @audioId = FLOOR(1+RAND()*300);
-        SET @audioEvent = FLOOR(1+RAND()*11);
+       SET @audioEvent = CASE 
+				WHEN @rowNumbers <= 30 THEN @rowNumbers%40
+				ELSE FLOOR(1+RAND()*40) END;
         SET @cluster = ELT(FLOOR(1+RAND()*5),
 			'{"clusterId": "cluster_006", "topic": "Cancel Subscription", "status": "Pending"}',
             '{"clusterId": "cluster_004", "topic": "Failed Transaction", "status": "Resolved"}',
