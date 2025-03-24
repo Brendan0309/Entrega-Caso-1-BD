@@ -195,7 +195,6 @@ CREATE TABLE IF NOT EXISTS `PaymentAsistant`.`Payment_UserAdresses` (
   `enabled` BIT NOT NULL,
   `userid` INT NOT NULL,
   `adressid` INT NOT NULL,
-  PRIMARY KEY (`userid`, `adressid`),
   INDEX `fk_Payment_UserAdresses_Payment_Users1_idx` (`userid` ASC) VISIBLE,
   INDEX `fk_Payment_UserAdresses_Payment_Adresses1_idx` (`adressid` ASC) VISIBLE,
   CONSTRAINT `fk_Payment_UserAdresses_Payment_Users1`
