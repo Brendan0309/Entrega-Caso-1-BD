@@ -26,6 +26,8 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulatePeople();
+
+
 DELIMITER //
 CREATE PROCEDURE PopulateUsers()
 BEGIN
@@ -46,6 +48,108 @@ BEGIN
 END//
 DELIMITER ;
 CALL PopulateUsers();
+
+INSERT INTO `PaymentAsistant`.`Payment_ContactInfoTypes` (`name`) VALUES
+('Correo'),
+('Telefono'),
+('Fax');
+
+INSERT INTO `PaymentAsistant`. `payment_MetodosDePago` (`name`, apiURL, secretKey, `key`, logoIconURL, enabled, templateJSON)
+VALUES 
+('PayPal', 'https://api.paypal.com', UNHEX('A1B2C3D4E5F6'), UNHEX('F6E5D4C3B2A1'), 'paypal.png', 1, '{"config": "sample"}'),
+('Stripe', 'https://api.stripe.com', UNHEX('123456789ABC'), UNHEX('ABC987654321'), 'stripe.png', 1, '{"currency": "USD"}');
+
+INSERT INTO `PaymentAsistant`.`Payment_Currencies` (`name`, acronym, symbol) VALUES
+('Dólar Estadounidense', 'USD', '$'),
+('Euro', 'EUR', '€'),
+('Colón', 'CRC', '₡'),
+('Libra Esterlina', 'GBP', '£'),
+('Yen Japonés', 'JPY', '¥');
+
+INSERT INTO PaymentAsistant.Payment_CurrencyConversions (
+    startdate, enddate, exchangeRate, enabled, currentExchangeRate, currencyid_source, currencyid_destiny
+) VALUES 
+    -- CRC to USD
+    ('2023-10-01', '2023-10-31', 0.001333, 1, 1, 3, 1),
+    -- CRC to EUR
+    ('2023-10-01', '2023-10-31', 0.001200, 1, 1, 3, 2),
+    -- CRC to GBP
+    ('2023-10-01', '2023-10-31', 0.001100, 1, 1, 3, 4),
+    -- CRC to JPY
+    ('2023-10-01', '2023-10-31', 0.150000, 1, 1, 3, 5),
+    -- USD to CRC
+    ('2023-10-01', '2023-10-31', 750.000000, 1, 1, 1, 3),
+    -- EUR to CRC
+    ('2023-10-01', '2023-10-31', 830.000000, 1, 1, 2, 3),    
+    -- GBP to CRC
+    ('2023-10-01', '2023-10-31', 900.000000, 1, 1, 4, 3),
+    -- JPY TO CRC
+    ('2023-10-01', '2023-10-31', 6.666667, 1, 1, 5, 3); 
+
+INSERT INTO `PaymentAsistant`.`Payment_Countries`(`name`, currencyid) VALUES
+('Estados Unidos', 1),
+('Costa Rica', 3),
+('Reino Unido', 4),
+('Japón', 5),
+('España', 2),
+('Francia', 2);
+
+INSERT INTO `PaymentAsistant`.`Payment_States`(`name`, countryId) VALUES
+('New York', 1),
+('San Jose', 2),
+('Liverpool', 3),
+('Tokio', 4),
+('Madrid', 5),
+('Paris', 6);
+
+INSERT INTO `PaymentAsistant`.`Payment_Cities`(`name`, stateid) VALUES
+('Harlem', 1),
+('Tibas', 2),
+('Anfield', 3),
+('Shibuya', 4),
+('Barajas', 5),
+('Isla dla Cité', 6);
+
+INSERT INTO PaymentAsistant.Payment_Subscriptions (subscriptionId, `description`, periodStart, periodEND, enabled, imgURL) 
+VALUES
+(1, 'Suscripción Gratis', CURDATE(), NULL, 1, 'https://example.com/gratis.png'),
+(2, 'Personal', CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 'https://example.com/humano.png'),
+(3, 'Familiar', CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 'https://example.com/familia.png'),
+(4, 'Empresarial', CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 'https://example.com/empresas.png');
+
+ALTER TABLE PaymentAsistant.Payment_PlanPrices 
+MODIFY COLUMN endDate DATE NULL;
+
+INSERT INTO `PaymentAsistant`.`Payment_PlanPrices` (planPriceId, amount, recurrencyType, postTime, endDate, `current`, subscriptionid) VALUES
+(1, 0, 1, CURDATE(), NULL , 1, 1),  -- Gratis
+(2, 9.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 2),  -- personal
+(3, 19.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 3),  -- familiar
+(4, 49.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 4);  -- empresarial
+
+INSERT INTO `PaymentAsistant`. `Payment_Languages` (`name`, culture, countryid)
+VALUES 
+('Español Costa Rica', 'CRC', 2),
+('Frances', 'FR',  6),
+('Japones','JP', 4);
+
+INSERT INTO `PaymentAsistant`.`Payment_MediosDisponibles`
+    (`name`, token, expTokenDate, maskAccount, callbackURLget, 
+    callbackPost, callbackredirect, personID, metodoId, configurationJSON) 
+VALUES 
+    ('Visa', UNHEX('A1B2C3D4E5F6'), '2025-12-31', '**** **** **** 1234', 'https://example.com/getVisa', 
+    'https://example.com/postVisa', 'https://example.com/redirectVisa', 11, 1, '{"currency": "CRC"}'),
+    ('MasterCard', UNHEX('1234567890ABCDEF'), '2026-11-30', '**** **** **** 5678', 'https://example.com/getMC',
+    'https://example.com/postMC', 'https://example.com/redirectMC', 12, 2, '{"currency": "USD"}'),
+    ('PayPal', UNHEX('ABCDEF1234567890'), '2025-10-15', 'paypal_user_01', 'https://example.com/getPP', 
+    'https://example.com/postPP', 'https://example.com/redirectPP', 10, 1, '{"email": "user@example.com"}');
+
+INSERT INTO `PaymentAsistant`.`Payment_Modules`(`name`, languageId) VALUES
+('Menu Principal', 1),
+('Registrar Pago', 1),
+('Registrar Metodo Pago', 1),
+('Agendar Pago', 1);
+
+
 INSERT INTO Payment_MediaTypes(name, playerImp) VALUES
 ('Invoice PDF', 'PDF Reader'),
 ('Transcript File', 'PDF Reader'),
@@ -53,6 +157,8 @@ INSERT INTO Payment_MediaTypes(name, playerImp) VALUES
 ('Video File', 'MP4 Player'),
 ('Image', 'Image Visualizer');
 DELIMITER //
+
+	
 CREATE PROCEDURE PopulateMediaFiles()
 BEGIN
     SET @numberRows = 60;
@@ -74,6 +180,8 @@ BEGIN
 END//
 DELIMITER ;
 CALL PopulateMediaFiles();
+
+
 INSERT INTO Payment_AudioEvent(name, enabled) VALUES
 ('Payment Registration', 1),
 ('New Transaction', 1),
@@ -87,6 +195,8 @@ INSERT INTO Payment_AudioEvent(name, enabled) VALUES
 ('Prompt repetition', 1),
 ('Unknown Response', 1);
 DELIMITER //
+
+	
 CREATE PROCEDURE PopulateCuePoints()
 BEGIN
     SET @rowNumbers = 100;
@@ -101,6 +211,8 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulateCuePoints();
+
+
 DELIMITER //
 CREATE PROCEDURE PopulateAudioRecordings()
 BEGIN
@@ -129,6 +241,8 @@ BEGIN
 END//
 DELIMITER ;
 CALL PopulateAudioRecordings();
+
+
 DELIMITER //
 CREATE PROCEDURE PopulateAudioTranscripts()
 BEGIN
@@ -157,6 +271,8 @@ BEGIN
 END//
 DELIMITER ;
 CALL PopulateAudioTranscripts();
+
+
 INSERT INTO Payment_ScreenEvents(name, enabled) VALUES
 	('Screen Loaded', 1),
 	('Payment Form Displayed', 1),
@@ -173,32 +289,8 @@ INSERT INTO Payment_ScreenEvents(name, enabled) VALUES
 	('Back Button Clicked', 1),
 	('Retry Button Clicked', 1),
 	('Processing Screen Displayed', 1);
-INSERT INTO Payment_Currencies (name, acronym, symbol) VALUES
-('Dólar Estadounidense', 'USD', '$'),
-('Euro', 'EUR', '€'),
-('Colón', 'CRC', '₡'),
-('Libra Esterlina', 'GBP', '£'),
-('Yen Japonés', 'JPY', '¥');
-INSERT INTO Payment_Countries(name, currencyid) VALUES
-('Estados Unidos', 1),
-('Costa Rica', 3),
-('Reino Unido', 4),
-('Japón', 5),
-('España', 2),
-('Francia', 2);
-INSERT INTO Payment_Languages (name, culture, countryid)
-VALUES 
-('English USA', 'EN', 1),
-('English UK', 'EN-UK', 3),
-('Español Costa Rica', 'CRC', 2),
-('Frances', 'FR',  6),
-('Japones','JP', 4);
-INSERT INTO Payment_Modules(name, languageId) VALUES
-('Menu Principal', 3),
-('Registrar Pago', 3),
-('Registrar Metodo Pago', 3),
-('Agendar Pago', 3);
-DELIMITER //
+
+	
 CREATE PROCEDURE PopulateScreenRecordings()
 BEGIN
     SET @rowNumber = 100;
@@ -214,6 +306,8 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulateScreenRecordings();
+
+
 DELIMITER //
 CREATE PROCEDURE PopulateScreenAudioSync()
 BEGIN
@@ -226,6 +320,8 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulateScreenAudioSync();
+
+
 DELIMITER //
 CREATE PROCEDURE PopulateAI()
 BEGIN
