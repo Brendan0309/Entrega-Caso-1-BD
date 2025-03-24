@@ -1,13 +1,17 @@
 # Entrega-Caso-1-BD
 
 Nombre de los integrantes:
+
 Julián Castro Barrantes
+
 Brendan Ramírez Campos
 
 
-Diseño Actualizado de la base de datos: [AvanceFinal.pdf](https://github.com/user-attachments/files/19439338/AvanceFinal.pdf)
+Diseño Actualizado de la base de datos: [AvanceFinal.pdf](./AvanceFinal.pdf)
 Script de Creación de la base de datos:
+
 	- ARCHIVO .MD: [ScriptCreacion.md](./ScriptCreacion.md)
+ 
  	- ARCHIVO .SQL: [ScriptCreacion.sql](./ScriptCreacion.sql)
 
 
