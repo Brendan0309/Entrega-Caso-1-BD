@@ -7,13 +7,72 @@ Nombre de los integrantes:
 -Brendan Ramírez Campos
 
 
+
+
 Diseño Actualizado de la base de datos: [AvanceFinal.pdf](./AvanceFinal.pdf)<br>
 Script de Creación de la base de datos:<br>
 	- ARCHIVO .MD: [ScriptCreacion.md](./ScriptCreacion.md)<br>
- 	- ARCHIVO .SQL: [ScriptCreacion.sql](./ScriptCreacion.sql)<br>
+ 	- ARCHIVO .SQL: [ScriptCreacion.sql](./ScriptCreacion.sql)<br><br>
 
 Script para Llenar la base de datos:<br>
-	-ARCHIVO .SQL: [ScriptLlenado.sql](./ScriptLlenado.sql)<br>
+	- ARCHIVO .SQL: [ScriptLlenado.sql](./ScriptLlenado.sql)<br><br>
+ Script para las consultas solicitadas:<br>
+ 	- ARCHIVO .SQL: [ScriptSelects.sql](./'Script Selects.sql')<br><br>
+  Consultas Solicitadas:
+  	1.  Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros) <br>
+   **Código MySQL**:
+
+SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,
+CASE
+    WHEN PP.recurrencyType = 1 THEN 'Mensual'
+    WHEN PP.recurrencyType = 2 THEN 'Anual'
+    WHEN PP.recurrencyType = 3 THEN 'Permanente' END 'Frecuencia de Cobro',
+CASE
+    WHEN PP.recurrencyType = 1 THEN TIMESTAMPDIFF(MONTH, PPE.adquisitionDate, NOW())*PP.amount
+    WHEN PP.recurrencyType = 2 THEN TIMESTAMPDIFF(YEAR, PPE.adquisitionDate, NOW())*PP.amount
+    WHEN PP.recurrencyType = 3 THEN PP.amount END 'Total Pagado'
+FROM Payment_Users PU
+INNER JOIN Payment_Personas PS ON PU.personID= PS.personID
+INNER JOIN Payment_ContactInfoPerson CIP ON (PS.personID = CIP.personID AND CIP.contacInfoTypeID = 1)
+INNER JOIN Payment_UserAdresses UA ON PU.userid = UA.userid
+INNER JOIN Payment_Adresses AD ON UA.adressid = AD.adressid
+INNER JOIN Payment_Cities CY ON CY.cityid = AD.cityid
+INNER JOIN Payment_States ST ON ST.stateid = CY.cityid
+INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid
+INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid
+INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid
+INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid
+WHERE PU.enabled = 1;<br>
+   **Datatable**:
+| Nombre               | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
+|----------------------|--------------|--------------------------------------|-------------------------|---------------------|---------|------------|--------------|
+| Kimberly Walker      | España       | kimberly.walker12@example.com        | 2023-01-02 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
+| Sandra Lewis         | Estados Unidos | sandra.lewis62@example.com          | 2025-01-12 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
+| Joseph Martin        | España       | joseph.martin61@example.com          | 2023-07-28 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
+| Nancy Perez          | Francia      | nancy.perez89@example.com            | 2025-01-27 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
+| David Rodriguez      | Francia      | david.rodriguez@example.com          | 2024-02-07 00:00:00     | Personal            | 5500.00 | Mensual    | 71500.00     |
+| Charles Davis        | Estados Unidos | charles.davis96@example.com         | 2024-02-29 00:00:00     | Personal            | 5500.00 | Mensual    | 66000.00     |
+| Patricia Lopez       | Costa Rica   | patricia.lopez77@example.com         | 2024-03-18 00:00:00     | Personal            | 5500.00 | Mensual    | 66000.00     |
+| Ashley Brown         | Japón        | ashley.brown@example.com             | 2023-06-07 00:00:00     | Personal            | 5500.00 | Mensual    | 115500.00    |
+| Donald Young         | Reino Unido  | donald.young8@example.com            | 2024-06-18 00:00:00     | Personal            | 5500.00 | Mensual    | 49500.00     |
+| Michelle Lee         | Estados Unidos | michelle.lee40@example.com          | 2024-11-20 00:00:00     | Personal            | 5500.00 | Mensual    | 22000.00     |
+| Margaret Nguyen      | España       | margaret.nguyen45@example.com        | 2023-06-21 00:00:00     | Personal            | 5500.00 | Mensual    | 115500.00    |
+| Christopher Thomas   | Japón        | christopher.thomas61@example.com     | 2023-03-25 00:00:00     | Personal            | 5500.00 | Mensual    | 126500.00    |
+| Charles Lopez        | Reino Unido  | charles.lopez93@example.com          | 2024-05-13 00:00:00     | Personal            | 5500.00 | Mensual    | 55000.00     |
+| Linda Miller         | España       | linda.miller22@example.com           | 2023-02-16 00:00:00     | Personal            | 5500.00 | Mensual    | 137500.00    |
+| John Anderson        | Costa Rica   | john.anderson0@example.com           | 2023-09-01 00:00:00     | Personal            | 5500.00 | Mensual    | 99000.00     |
+| Joseph Hernandez     | Estados Unidos | joseph.hernandez@example.com        | 2024-10-14 00:00:00     | Familiar            | 10500.00 | Mensual    | 52500.00     |
+| Paul Nguyen          | Estados Unidos | paul.nguyen77@example.com           | 2023-10-19 00:00:00     | Familiar            | 10500.00 | Mensual    | 178500.00    |
+| Donald Nguyen        | Costa Rica   | donald.nguyen25@example.com          | 2023-05-24 00:00:00     | Familiar            | 10500.00 | Mensual    | 231000.00    |
+| Mark Young           | Francia      | mark.young32@example.com             | 2024-02-03 00:00:00     | Empresarial         | 25500.00 | Mensual    | 331500.00    |
+| Karen Williams       | España       | karen.williams92@example.com         | 2024-01-22 00:00:00     | Empresarial         | 25500.00 | Mensual    | 357000.00    |
+| Jessica Young        | Francia      | jessica.young11@example.com          | 2023-05-14 00:00:00     | Empresarial         | 25500.00 | Mensual    | 561000.00    |
+| James Walker         | Reino Unido  | james.walker31@example.com           | 2023-02-19 00:00:00     | Empresarial         | 25500.00 | Mensual    | 637500.00    |
+| Richard Harris       | Estados Unidos | richard.harris24@example.com        | 2023-08-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 484500.00    |
+| Patricia Thompson    | Costa Rica   | patricia.thompson@example.com        | 2023-01-18 00:00:00     | Empresarial         | 25500.00 | Mensual    | 663000.00    |
+| Ashley Robinson      | Estados Unidos | ashley.robinson23@example.com       | 2023-12-25 00:00:00     | Empresarial         | 25500.00 | Mensual    | 357000.00    |
+| Donna Thompson       | Reino Unido  | donna.thompson81@example.com         | 2024-04-01 00:00:00     | Empresarial         | 25500.00 | Mensual    | 280500.00    |
+| William Jones        | España       | william.jones28@example.com          | 2023-03-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 612000.00    |
 
 
 **Lista de Entidades** (Actualizada)
