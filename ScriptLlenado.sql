@@ -600,7 +600,7 @@ CREATE PROCEDURE PopulateAudioEvents()
 BEGIN
     SET @rowNumber = 40;
     WHILE @rowNumber > 0 DO
-	SET @name = ELT(1 + FLOOR(RAND() * 40),
+	SET @name = ELT(@rowNumber),
             'Error transcripción', 'Falsa detección voz', 'Ruido no filtrado', 'Desincronización AV', 'Corte de audio', 'Eco residual',
             'Micrófono saturado', 'Silencio erróneo', 'Omite palabras', 'Confunde homófonos', 'Fallo diarización', 'Latencia alta', 'Audio con artefactos', 'Sibilancia fuerte',
             'Clonación voz ilegal', 'Modelo sobreajustado', 'Muestreo incompatible', 'Metadatos erróneos', 'Sesgo en reconocimiento', 'Falso positivo', 'Timestamp incorrecto',
