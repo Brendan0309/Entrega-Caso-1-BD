@@ -59,6 +59,104 @@ VALUES
 ('PayPal', 'https://api.paypal.com', UNHEX('A1B2C3D4E5F6'), UNHEX('F6E5D4C3B2A1'), 'paypal.png', 1, '{"config": "sample"}'),
 ('Stripe', 'https://api.stripe.com', UNHEX('123456789ABC'), UNHEX('ABC987654321'), 'stripe.png', 1, '{"currency": "USD"}');
 
+DELIMITER //
+
+CREATE PROCEDURE PopulateContactInfoPerson()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE max_personas INT;
+    DECLARE contact_type INT;
+    DECLARE is_enabled BIT;
+    DECLARE metodo_pago INT;
+    DECLARE contact_value VARCHAR(100);
+    
+    SELECT COUNT(*) INTO max_personas FROM Payment_Personas;
+    
+    WHILE i <= max_personas DO
+        -- Insertar EMAIL
+        SET contact_type = 1; -- Correo
+        SET is_enabled = IF(RAND() > 0.3, 1, 0); 
+        SET metodo_pago = IF(RAND() > 0.5, 1, 2); 
+        
+        SELECT CONCAT(
+            LOWER(REPLACE(p.firstName, ' ', '')), 
+            '.', 
+            LOWER(REPLACE(p.lastName, ' ', '')), 
+            IF(RAND() > 0.7, '', FLOOR(RAND() * 100)), 
+            '@example.com'
+        ) INTO contact_value
+        FROM Payment_Personas p
+        WHERE p.personID = i;
+        
+        IF contact_value IS NULL THEN
+            SET contact_value = CONCAT('user', i, '@example.com');
+        END IF;
+        
+        -- Insertar registro de email
+        INSERT INTO Payment_ContactInfoPerson (`value`, enabled, lastUpdate, contacInfoTypeId, personID, metodoId)
+        VALUES (contact_value, is_enabled, NOW(), contact_type, i, metodo_pago);
+        
+        -- Insertar TELÉFONO 
+        IF RAND() > 0.2 THEN
+            SET contact_type = 2; -- Teléfono
+            SET is_enabled = IF(RAND() > 0.4, 1, 0);
+            SET metodo_pago = IF(RAND() > 0.5, 1, 2); 
+            
+            -- Generar número de teléfono aleatorio
+            SET contact_value = CONCAT(
+                '6', 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                ' ', 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                ' ', 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9)
+            );
+            
+            -- Insertar registro de teléfono
+            INSERT INTO Payment_ContactInfoPerson (`value`, enabled, lastUpdate, contacInfoTypeId, personID, metodoId)
+            VALUES (contact_value, is_enabled, NOW(), contact_type, i, metodo_pago);
+        END IF;
+        
+        -- Insertar FAX 
+        IF RAND() > 0.8 THEN
+            SET contact_type = 3; -- Fax
+            SET is_enabled = IF(RAND() > 0.5, 1, 0); 
+            SET metodo_pago = IF(RAND() > 0.5, 1, 2); 
+            
+            -- Generar número de fax aleatorio
+            SET contact_value = CONCAT(
+                '9', 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                ' ', 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                ' ', 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9), 
+                FLOOR(RAND() * 9)
+            );
+            
+            -- Insertar registro de fax
+            INSERT INTO Payment_ContactInfoPerson (`value`, enabled, lastUpdate, contacInfoTypeId, personID, metodoId)
+            VALUES (contact_value, is_enabled, NOW(), contact_type, i, metodo_pago);
+        END IF;
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
+
+
+CALL PopulateContactInfoPerson();
+
 INSERT INTO `PaymentAsistant`.`Payment_Currencies` (`name`, acronym, symbol) VALUES
 ('Dólar Estadounidense', 'USD', '$'),
 ('Euro', 'EUR', '€'),
@@ -102,6 +200,104 @@ INSERT INTO `PaymentAsistant`.`Payment_Cities`(`name`, stateid) VALUES
 ('Barajas', 5),
 ('Isla dla Cité', 6);
 
+DELIMITER //
+
+CREATE PROCEDURE PopulateAdresses()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE max_cities INT;
+    DECLARE random_city INT;
+    DECLARE line2_text VARCHAR(50);
+    DECLARE lat FLOAT;
+    DECLARE lon FLOAT;
+    
+    SELECT COUNT(*) INTO max_cities FROM Payment_Cities;
+    
+
+    WHILE i <= 20 DO
+        SET random_city = FLOOR(1 + RAND() * max_cities);
+        
+        IF RAND() > 0.3 THEN
+            SET line2_text = CONCAT('Apt ', FLOOR(100 + RAND() * 900));
+        ELSE
+            SET line2_text = NULL;
+        END IF;
+        
+        SET lat = 37.0 + RAND() * 20;  
+        SET lon = -122.0 - RAND() * 60;
+        
+
+        INSERT INTO Payment_Adresses (line1, line2, zipcode, geoposition, cityid)
+        VALUES (
+            CONCAT('Calle ', FLOOR(1 + RAND() * 100)),
+            line2_text,
+            CONCAT('1', FLOOR(1000 + RAND() * 9000)), 
+            POINT(lat, lon),
+            random_city
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
+
+
+CALL PopulateAdresses();
+
+DELIMITER //
+
+CREATE PROCEDURE PopulateUserAdresses()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE max_users INT;
+    DECLARE max_adresses INT;
+    DECLARE user_id INT;
+    DECLARE adress_id INT;
+    DECLARE attempts INT;
+    
+    SELECT COUNT(*) INTO max_users FROM Payment_Users;
+    SELECT COUNT(*) INTO max_adresses FROM Payment_Adresses;
+    
+    SET i = 1;
+    REPEAT
+
+        IF NOT EXISTS (SELECT 1 FROM Payment_UserAdresses WHERE userid = i AND adressid = i) THEN
+
+            INSERT INTO Payment_UserAdresses (enabled, userid, adressid)
+            VALUES (1, i, i);
+        END IF;
+        
+        SET i = i + 1;
+    UNTIL i > LEAST(max_users, max_adresses) END REPEAT;
+    
+    SET i = 1;
+    WHILE i <= max_users AND max_adresses > max_users DO
+        IF RAND() > 0.8 THEN 
+            SET attempts = 0;
+            
+            REPEAT
+                SET adress_id = FLOOR(1 + RAND() * max_adresses);
+                SET attempts = attempts + 1;
+                
+            UNTIL NOT EXISTS (SELECT 1 FROM Payment_UserAdresses WHERE userid = i AND adressid = adress_id) 
+                  OR attempts > 10 END REPEAT;
+            
+            IF attempts <= 10 THEN
+                INSERT INTO Payment_UserAdresses (enabled, userid, adressid)
+                VALUES (1, i, adress_id);
+            END IF;
+        END IF;
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
+
+
+CALL PopulateUserAdresses();
+
 INSERT INTO PaymentAsistant.Payment_Subscriptions (subscriptionId, `description`, periodStart, periodEND, enabled, imgURL) 
 VALUES
 (1, 'Suscripción Gratis', CURDATE(), NULL, 1, 'https://example.com/gratis.png'),
@@ -117,6 +313,76 @@ INSERT INTO `PaymentAsistant`.`Payment_PlanPrices` (planPriceId, amount, recurre
 (2, 9.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 2),  -- personal
 (3, 19.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 0, 3),  -- familiar
 (4, 49.99, 1, CURDATE(), CURDATE() + INTERVAL 30 DAY, 1, 4);  -- empresarial
+
+DELIMITER //
+
+CREATE PROCEDURE PopulatePlanPerEntity()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE user_count INT;
+    DECLARE plan_count INT;
+    DECLARE random_user INT;
+    DECLARE random_plan INT;
+    DECLARE random_days INT;
+    DECLARE adq_date DATE;
+    DECLARE exp_date DATE;
+    DECLARE schedule_id INT;
+    
+    SELECT COUNT(*) INTO user_count FROM Payment_Users WHERE enabled = 1;
+    SELECT COUNT(*) INTO plan_count FROM Payment_PlanPrices;
+    
+    INSERT INTO Payment_Schedules (`name`, recurrencyType, `repeat`, endType, repetitions, endDate)
+    VALUES 
+        ('Mensual', 1, 1, 1, NULL, NULL),
+        ('Anual', 2, 1, 1, NULL, NULL),
+        ('Trimestral', 3, 1, 1, NULL, NULL);
+    
+    SET schedule_id = LAST_INSERT_ID();
+    
+    WHILE i <= 40 DO
+        SET random_user = FLOOR(1 + RAND() * user_count);
+        SET random_plan = FLOOR(1 + RAND() * plan_count);
+        SET random_days = FLOOR(1 + RAND() * 365);
+        
+        SET adq_date = DATE_ADD('2023-01-01', INTERVAL FLOOR(RAND() * 800) DAY);
+        
+        IF i % 3 = 0 THEN
+            SET exp_date = DATE_ADD(CURDATE(), INTERVAL FLOOR(1 + RAND() * 14) DAY);
+        ELSE
+            SET exp_date = DATE_ADD(adq_date, INTERVAL 
+                CASE 
+                    WHEN random_plan % 3 = 0 THEN 30  
+                    WHEN random_plan % 3 = 1 THEN 365  
+                    ELSE 90                         
+                END DAY);
+        END IF;
+        
+       
+        INSERT INTO Payment_PlanPerEntity (
+            adquisitionDate, 
+            enabled, 
+            planPriceid, 
+            scheduleid, 
+            userid, 
+            companyid, 
+            expirationDate
+        ) VALUES (
+            adq_date,
+            1,
+            random_plan,
+            FLOOR(1 + RAND() * 3), 
+            random_user,
+            NULL,
+            exp_date
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+    
+END //
+
+DELIMITER;
+CALL PopulatePlanPerEntity();
 
 INSERT INTO `PaymentAsistant`. `Payment_Languages` (`name`, culture, countryid)
 VALUES 
@@ -141,6 +407,161 @@ INSERT INTO `PaymentAsistant`.`Payment_Modules`(`name`, languageId) VALUES
 ('Registrar Metodo Pago', 1),
 ('Agendar Pago', 1);
 
+DELIMITER //
+
+CREATE PROCEDURE PopulatePagos()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE success BOOLEAN;
+    
+    WHILE i <= 50 DO
+        SET success = FALSE;
+        
+        WHILE NOT success DO
+            BEGIN
+                DECLARE random_person INT;
+                DECLARE random_medio INT;
+                DECLARE random_metodo INT;
+                DECLARE random_currency INT;
+                DECLARE pago_monto DECIMAL(10,2);
+                
+                SELECT personID INTO random_person FROM Payment_Personas 
+                ORDER BY RAND() LIMIT 1;
+                
+                SELECT pagoMedioId INTO random_medio FROM Payment_MediosDisponibles 
+                ORDER BY RAND() LIMIT 1;
+                
+                SELECT metodoId INTO random_metodo FROM payment_MetodosDePago 
+                ORDER BY RAND() LIMIT 1;
+                
+                SELECT currencyid INTO random_currency FROM Payment_Currencies 
+                ORDER BY RAND() LIMIT 1;
+                
+                -- Generar monto aleatorio
+                SET pago_monto = ROUND(10 + (RAND() * 1990), 2);
+                
+                --  insertar
+                INSERT INTO Payment_Pagos (
+                    pagoMedioId, metodoId, personID, monto, actualMonto, 
+                    result, auth, chargetoken, descripcion, `error`, 
+                    fecha, `checksum`, exchangeRate, convertedAmount, currencyid
+                ) VALUES (
+                    random_medio, random_metodo, random_person, pago_monto, pago_monto,
+                    CONCAT('result', i), CONCAT('auth', i), CONCAT('token', i),
+                    CASE 
+                        WHEN RAND() > 0.7 THEN 'Compra online'
+                        WHEN RAND() > 0.5 THEN 'Pago de servicio'
+                        WHEN RAND() > 0.3 THEN 'Compra en tienda'
+                        ELSE 'Pago de suscripción'
+                    END,
+                    IF(RAND() > 0.9, 'Error simulado', NULL),
+                    DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 180) DAY),
+                    SHA2(CONCAT(random_person, random_medio, pago_monto, NOW()), 256),
+                    1.0, 
+                    pago_monto, 
+                    random_currency
+                );
+                
+                SET success = TRUE;
+            END;
+        END WHILE;
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
+
+CALL PopulatePagos();
+
+DELIMITER //
+
+CREATE PROCEDURE PopulatePaymentLog()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE max_users INT;
+    DECLARE random_user INT;
+    DECLARE log_date DATETIME;
+    DECLARE action_type INT;
+    DECLARE user_fullname VARCHAR(100);
+    
+    SELECT COUNT(*) INTO max_users FROM Payment_Users;
+    
+    WHILE i <= 60 DO
+        SET random_user = FLOOR(1 + RAND() * max_users);
+        
+        SELECT CONCAT(p.firstName, ' ', p.lastName) INTO user_fullname
+        FROM Payment_Users u
+        JOIN Payment_Personas p ON u.personID = p.personID
+        WHERE u.userid = random_user;
+        
+        -- Fecha aleatoria en los últimos 3 meses
+        SET log_date = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 90) DAY);
+        SET log_date = DATE_ADD(log_date, INTERVAL FLOOR(RAND() * 24) HOUR);
+        SET log_date = DATE_ADD(log_date, INTERVAL FLOOR(RAND() * 60) MINUTE);
+        
+        SET action_type = FLOOR(1 + RAND() * 4);
+        
+        INSERT INTO Payment_Log (`description`, postTime, computer, username, trace, referenceid1, referenceid2, value1, value2, `checksum`)
+        VALUES (
+            CASE 
+                WHEN action_type = 1 THEN 'Inicio de sesión'
+                WHEN action_type = 2 THEN 'Realización de pago'
+                WHEN action_type = 3 THEN 'Cierre de sesión'
+                ELSE 'Error en operación'
+            END,
+            log_date,
+            CONCAT('PC-', FLOOR(1 + RAND() * 10)),
+            user_fullname, 
+            CONCAT('trace', i),
+            random_user, -- referenceid1 = userid
+            FLOOR(1 + RAND() * 100),
+            FLOOR(1 + RAND() * 100),
+            FLOOR(1 + RAND() * 100),
+            SHA2(CONCAT(random_user, log_date, i), 256)
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+    
+    SET i = 1;
+    WHILE i <= 15 DO
+        SET random_user = i; 
+        
+        SELECT CONCAT(p.firstName, ' ', p.lastName) INTO user_fullname
+        FROM Payment_Users u
+        JOIN Payment_Personas p ON u.personID = p.personID
+        WHERE u.userid = random_user;
+        
+        SET @j = 1;
+        WHILE @j <= 5 DO
+            SET log_date = DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 30) DAY);
+            SET log_date = DATE_ADD(log_date, INTERVAL FLOOR(RAND() * 24) HOUR);
+            SET log_date = DATE_ADD(log_date, INTERVAL FLOOR(RAND() * 60) MINUTE);
+            
+            INSERT INTO Payment_Log (`description`, postTime, computer, username, trace, referenceid1, referenceid2, value1, value2, `checksum`)
+            VALUES (
+                CONCAT('Acción adicional ', @j),
+                log_date,
+                CONCAT('PC-', FLOOR(1 + RAND() * 5)),
+                user_fullname, 
+                CONCAT('trace-extra-', i, '-', @j),
+                random_user, 
+                FLOOR(1 + RAND() * 50),
+                FLOOR(1 + RAND() * 50),
+                FLOOR(1 + RAND() * 50),
+                SHA2(CONCAT(random_user, log_date, i, @j), 256)
+            );
+            
+            SET @j = @j + 1;
+        END WHILE;
+        
+        SET i = i + 1;
+    END WHILE;
+END //
+
+DELIMITER ;
+CALL PopulatePaymentLog();
 
 INSERT INTO Payment_MediaTypes(name, playerImp) VALUES
 ('Invoice PDF', 'PDF Reader'),
