@@ -106,7 +106,7 @@ CREATE PROCEDURE PopulateAudioRecordings()
 BEGIN
 	SET @rowNumbers = 100;
 	WHILE @rowNumbers > 0 DO
-		SET @userid = FLOOR(1+RAND()*40);
+	SET @userid = FLOOR(1+RAND()*40);
         SET @audioId = FLOOR(1+RAND()*300);
         SET @audioEvent = FLOOR(1+RAND()*11);
         SET @cluster = ELT(FLOOR(1+RAND()*5),
@@ -198,7 +198,6 @@ INSERT INTO Payment_Modules(name, languageId) VALUES
 ('Registrar Pago', 3),
 ('Registrar Metodo Pago', 3),
 ('Agendar Pago', 3);
-DROP PROCEDURE PopulateScreenRecordings;
 DELIMITER //
 CREATE PROCEDURE PopulateScreenRecordings()
 BEGIN
@@ -215,6 +214,48 @@ BEGIN
 END //
 DELIMITER ;
 CALL PopulateScreenRecordings();
+DELIMITER //
+CREATE PROCEDURE PopulateScreenAudioSync()
+BEGIN
+	SET @rowNumbers = 100;
+    WHILE @rowNumbers > 0 DO
+		INSERT INTO Payment_ScreenAudioSync(screenRecordingsId, transcriptionId)
+        VALUES (@rowNumbers, @rowNumbers);
+        SET @rowNumbers = @rowNumbers-1;
+	END WHILE;
+END //
+DELIMITER ;
+CALL PopulateScreenAudioSync();
+DELIMITER //
+CREATE PROCEDURE PopulateAI()
+BEGIN
+    SET @rowNumbers = 400;
+    WHILE @rowNumbers > 0 DO
+	SET @processingTime = 1+RAND()*30;
+        SET @createdTime = TIMESTAMPADD(SECOND,FLOOR(RAND() * TIMESTAMPDIFF(SECOND, '2022-01-01 00:00:00', '2025-12-31 23:59:59')),'2022-01-01 00:00:00');
+	SET @apikey = SHA2('APIKEY',512);
+        SET @accuracy = 1+RAND()*99;
+        SET @status = CASE WHEN @accuracy > 70 THEN 'SUCCESS' ELSE 'FAILED' END;
+        SET @generatedResponse = ELT(1+RAND()*30,
+        	'I am sorry, could you repeat that', 'I cannot understand your instruction', 'Payment succesful', 'I am sorry, could you repeat that',
+		'I cannot understand your instruction', 'Payment successful', 'Transaction failed due to insufficient funds', 'Your request has been processed',
+		'Unable to complete the transaction', 'Please provide more details', 'Your balance is low', 'Transaction declined by the bank',
+		'Payment processing, please wait', 'Invalid account number', 'Your payment has been refunded', 'Service temporarily unavailable',
+		'Your request timed out', 'Please check your internet connection', 'Payment approved', 'Transaction completed successfully',
+		'Your card has expired', 'Invalid security code', 'Payment declined', 'Your account has been locked', 'Please contact customer support',
+		'Your transaction is pending', 'Payment method not supported', 'Your request has been queued', 'Transaction limit exceeded',
+		'Your payment is being reviewed', 'Please verify your identity', 'Your subscription has been renewed', 'Payment failed due to technical issues',
+		'AI system error: Unable to process request', 'Internal server error: Please try again later', 'AI model is currently unavailable',
+		'Error: AI encountered a bug while processing', 'AI is experiencing high latency; please wait', 'Error: AI response generation failed',
+		'AI is undergoing maintenance; try again later', 'Error: AI could not interpret your input', 'AI is overloaded; please reduce request frequency',
+		'Error: AI service is temporarily down');
+        INSERT INTO Payment_AIProcessingLogs(syncID, utilizedPrompt, processingTime, status, createdAt, api_key, iterationNumber, accuracyObtained, generatedResponse)
+        VALUES (FLOOR(1+RAND()*100), 'Categorize the following user input into the next stage of program flow', @processingTime, @status, @createdTime, @apikey, 0, @accuracy, @generatedResponse);
+        SET @rowNumbers = @rowNumbers-1;
+	END WHILE;
+END //
+DELIMITER ;
+CALL PopulateAI();
 
 	
 
