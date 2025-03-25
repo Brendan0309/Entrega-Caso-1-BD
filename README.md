@@ -55,7 +55,7 @@ INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid
 WHERE PU.enabled = 1;
 ```
 
-**Datatable**:
+**Datatable Obtenido**:
 
 | Nombre Completo      | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
 |----------------------|--------------|--------------------------------------|-------------------------|---------------------|---------|------------|--------------|
@@ -115,7 +115,7 @@ ORDER BY
     'Dias Restantes' ASC;
 ```
 
-**Datatable**:
+**Datatable Obtenido**:
 
 | Nombre Completo      | Email                           | Suscripción        | Fecha de Expiración     | Días Restantes |
 |----------------------|---------------------------------|--------------------|-------------------------|----------------|
@@ -155,7 +155,7 @@ ORDER BY
 LIMIT 15;
 ```
 
-**Datatable**:
+**Datatable Obtenido**:
 
 | Nombre Completo     | User ID | Total Acciones | Última Actividad       | Tipo de Ranking |
 |---------------------|---------|----------------|------------------------|-----------------|
@@ -195,7 +195,7 @@ ORDER BY
     total_acciones ASC  
 LIMIT 15;
 ```
-**Datatable:**
+**Datatable Obtenido**:
 | Nombre Completo      | User ID | Acciones | Última Actividad       | Tipo de Ranking |
 |----------------------|---------|----------|------------------------|-----------------|
 | Joseph Martin        | 29      | 1        | 2025-03-19 03:50:29    | Menos activo    |
@@ -233,7 +233,7 @@ GROUP BY AE.name
 ORDER BY COUNT(1) DESC;
 ```
 
-**Datatable**:
+**Datatable Obtenido**:
 
 | Casos Detectados | Nombre del Problema           |
 |------------------|-------------------------------|
