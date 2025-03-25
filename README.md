@@ -15,7 +15,7 @@ Script de Creación de la base de datos:<br>
 Script para Llenar la base de datos:<br>
 	- ARCHIVO .SQL: [ScriptLlenado.sql](./ScriptLlenado.sql)<br><br>
  Script para las consultas solicitadas:<br>
- 	- ARCHIVO .SQL: [ScriptSelects.sql](./'ScriptSelects'.sql)<br><br>
+ 	- ARCHIVO .SQL: [ScriptSelects.sql](./ScriptSelects.sql)<br><br>
   <hr>
 
   
