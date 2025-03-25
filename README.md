@@ -19,7 +19,7 @@ Script para Llenar la base de datos:<br>
   <hr>
   Consultas Solicitadas:
   	1.  Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros) <br>
-   **Código MySQL**:
+   **Código MySQL**:  
 
 SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,<br>
 CASE<br>
@@ -74,7 +74,7 @@ WHERE PU.enabled = 1;<br><br>
 | William Jones        | España       | william.jones28@example.com          | 2023-03-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 612000.00    |
 <br>
 2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros) <br>
-   **Código MySQL**:
+   **Código MySQL**:  
 
 SELECT 
     CONCAT(p.firstName, ' ', p.lastName) AS 'Nombre Completo',<br>
@@ -117,135 +117,204 @@ ORDER BY <br>
 | Mark Young           | mark.young32@example.com        | Empresarial        | 2025-04-06 00:00:00     | 13             |
 | Ashley Robinson      | ashley.robinson23@example.com   | Empresarial        | 2025-04-07 00:00:00     | 14             |
 <br>
-**Lista de Entidades** (Actualizada)
-- Personas
-- Usuarios
-	- Contraseña
-	- Habilitado
-	- Compañías (Opcional)
-- Información de contacto del usuario 
-	- Tipo (correo, teléfono, fax)
-	- Última actualización
-- Países
-- States
-	- Código Postal
-	- Posición geográfica
-- Ciudades
-- Tipo de usuario de la conexión (usuario, compañía)
-- Módulos
-	- nombre
-	- lenguaje
-- Suscripciones
-	- Precio
-	- Detalles
-	- Características
-		- Nombre
-		- Límites
-- Pagos registrados
-- Fecha de Vencimiento del pago
-- Nombre
-- Fecha de expiración
-- Monto
-- Habilitado
-- Moneda utilizada
-- Bancos 
-- Configurar cuenta Bancaria de Origen
-- Nombre del Banco
-- Número de Cuenta
-- Logo
-- Dirección
-- Tipo servicio
-- Servicios de Pago
-- Vinculación de APIs (PayPal, Apple Pay)
-	- Tokens (De acceso y de autenticación)
-	- Tiempo de expiración
-	- Código de Status
-- Métodos de Pago
-- Pagos
-	- Medio
-	- Monto
-	- Moneda Utilizada
-	- Ritmo de Conversión
-	- Fecha
-- Tipo de autenticación (Push o SMS)
-- Confirmación (Confirmada/Rechazada)
-- Notificar fallo
-- Recordatorios pagos
-	- Notificaciones
-		- Titulo
-		- Descripción
-		- Status
-		- destinatario
-		- remitente (usuarios ficticios del sistema)
-		- Fecha de envío		
-- Recordatorios adicionales
-- SMS autorizaciones de pagos 
-- Transacción
-	- Fecha
-	- Fecha de posteo
-	- Fondos virtuales
-- Tipo de Transacción 
-- Estado (Exitosa/Fallida)
-- Detalle
-- Monto
-- Fechas (tanto para pagos como para historial, cobros y notificaciones)
-- Cantidad de Pagos
-- Cantidad de Transferencias.
-- Confirmación pagos	
-- Compañías
-- Roles (compañía, usuarios)
-- Permisos
-- Subscripciones
-- Moneda
-- Símbolos
-- Alias
-- Nombre
-- Símbolo
-- Conversiones
-	- Fecha
-	- Es la actual
-	- Monto de cambio
-- Historial (captura detalles del servicio entre otros datos además de la frecuencia y algún tipo de preferencia)
-- Logs
-	- Tipo
-	- Referencias 1 y 2
-	- Valores de la referencia
-	- Fuente
-	- Severidad
-- Media (fotos, audios, pdf, pdf de los transcripts)
-	- Tipo
-		- Nombre
-		- Reproductor
-	- Archivos
-		- URL (para fotos y videos)
-		- Borrado
-		- Usuario perteneciente
-		- Fecha de generación
-- Horarios
-	- Nombre
-	- Recurrencia
-	- Posibles repeticiones (cada lunes, cada semana, cada mes)
-	- Posible siguiente ejecución
-- Idioma
-- Traduccion
-- Slangs
-- Nombre
-- ScreenRecorder
-- ScreenEvents
-- AudioRecorder
-- Audio Transcripts 
-- AudioEvents
-- SyncScreenAudio
-- CuePoints
-- Transcriptions
-- Transcription Task
-- IA
-- IA Conection
-- IA Responses
-- IA ProcessingLogs
-- Transcript Files
-- Recording Files
-- User Preferenses
+3. un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)<br>
+   **Código MySQL**:  
+
+-- Top 15 usuarios con más actividad 
+SELECT   
+    l.username AS nombre_completo,  
+    l.referenceid1 AS userid,  
+    COUNT(*) AS total_acciones,  
+    MAX(l.postTime) AS ultima_actividad,  
+    'Más activo' AS tipo_ranking  
+FROM   
+    Payment_Log l  
+GROUP BY   
+    l.username, l.referenceid1  
+ORDER BY   
+    total_acciones DESC  
+LIMIT 15;<br><br>
+       **Datatable**:
+| Nombre Completo     | User ID | Total Acciones | Última Actividad       | Tipo de Ranking |
+|---------------------|---------|----------------|------------------------|-----------------|
+| Joseph Hernandez    | 1       | 8              | 2025-03-25 23:02:29    | Más activo      |
+| David Thompson      | 5       | 8              | 2025-03-24 17:45:30    | Más activo      |
+| Donna Perez         | 10      | 8              | 2025-03-24 18:09:30    | Más activo      |
+| Charles Davis       | 6       | 8              | 2025-03-21 02:20:30    | Más activo      |
+| Sandra Johnson      | 9       | 8              | 2025-03-16 18:10:30    | Más activo      |
+| Paul Nguyen         | 7       | 7              | 2025-03-20 12:24:30    | Más activo      |
+| Donald Young        | 12      | 6              | 2025-03-25 04:05:30    | Más activo      |
+| Jessica Jackson     | 15      | 6              | 2025-03-25 09:04:30    | Más activo      |
+| Michelle Lee        | 13      | 6              | 2025-03-24 02:44:30    | Más activo      |
+| Ashley Brown        | 11      | 6              | 2025-03-21 19:54:30    | Más activo      |
+| Patricia Lopez      | 8       | 6              | 2025-03-19 05:47:30    | Más activo      |
+| Mark Young          | 3       | 6              | 2025-03-15 09:10:30    | Más activo      |
+| Ashley Clark        | 4       | 5              | 2025-03-25 11:44:30    | Más activo      |
+| Charles Walker      | 14      | 5              | 2025-03-23 11:37:30    | Más activo      |
+| Ashley Robinson     | 33      | 5              | 2025-03-04 16:11:29    | Más activo      |
+<br>
+-- Top 15 usuarios con menos actividad
+SELECT   
+    l.username AS nombre_completo,  
+    l.referenceid1 AS userid,   
+    COUNT(*) AS total_acciones,  
+    MAX(l.postTime) AS ultima_actividad,  
+    'Menos activo' AS tipo_ranking  
+FROM   
+    Payment_Log l  
+GROUP BY   
+    l.username, l.referenceid1  
+ORDER BY   
+    total_acciones ASC  
+LIMIT 15;<br><br>
+       **Datatable**:
+| Nombre Completo      | User ID | Acciones | Última Actividad       | Ranking      |
+|----------------------|---------|----------|------------------------|--------------|
+| John Anderson        | 39      | 2        | 2025-03-24 04:06:29    | Menos activo |
+| Patricia Thompson    | 28      | 2        | 2025-03-19 06:34:29    | Menos activo |
+| Jessica Williams     | 30      | 2        | 2025-03-13 09:55:29    | Menos activo |
+| Susan Lewis          | 16      | 2        | 2025-03-14 10:02:29    | Menos activo |
+| Karen Williams       | 18      | 2        | 2025-03-14 06:23:29    | Menos activo |
+| Christopher Thomas   | 31      | 2        | 2025-03-12 11:00:29    | Menos activo |
+| Nancy Perez          | 34      | 2        | 2025-01-26 16:50:29    | Menos activo |
+| Charles Lopez        | 32      | 2        | 2025-01-20 04:01:29    | Menos activo |
+| Joseph Martin        | 29      | 1        | 2025-03-19 03:50:29    | Menos activo |
+| Michael King         | 36      | 1        | 2025-03-21 12:51:29    | Menos activo |
+| Richard Thomas       | 22      | 1        | 2025-03-05 12:05:29    | Menos activo |
+| James Walker         | 24      | 1        | 2025-02-17 05:16:29    | Menos activo |
+| Richard Harris       | 26      | 1        | 2025-02-05 17:22:29    | Menos activo |
+| Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo |
+| Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo |
+<br>
+**Lista de Entidades** (Actualizada)  
+- Personas  
+- Usuarios  
+	- Contraseña  
+	- Habilitado  
+	- Compañías (Opcional)  
+- Información de contacto del usuario   
+	- Tipo (correo, teléfono, fax)  
+	- Última actualización  
+- Países  
+- States  
+	- Código Postal  
+	- Posición geográfica  
+- Ciudades  
+- Tipo de usuario de la conexión (usuario, compañía)  
+- Módulos  
+	- nombre  
+	- lenguaje  
+- Suscripciones  
+	- Precio  
+	- Detalles  
+	- Características  
+		- Nombre  
+		- Límites  
+- Pagos registrados  
+- Fecha de Vencimiento del pago  
+- Nombre  
+- Fecha de expiración  
+- Monto  
+- Habilitado  
+- Moneda utilizada  
+- Bancos   
+- Configurar cuenta Bancaria de Origen  
+- Nombre del Banco  
+- Número de Cuenta  
+- Logo  
+- Dirección  
+- Tipo servicio  
+- Servicios de Pago  
+- Vinculación de APIs (PayPal, Apple Pay)  
+	- Tokens (De acceso y de autenticación)  
+	- Tiempo de expiración  
+	- Código de Status  
+- Métodos de Pago  
+- Pagos  
+	- Medio  
+	- Monto  
+	- Moneda Utilizada  
+	- Ritmo de Conversión  
+	- Fecha  
+- Tipo de autenticación (Push o SMS)  
+- Confirmación (Confirmada/Rechazada)  
+- Notificar fallo  
+- Recordatorios pagos  
+	- Notificaciones  
+		- Titulo  
+		- Descripción    
+		- Status  
+		- destinatario  
+		- remitente (usuarios ficticios del sistema)  
+		- Fecha de envío  	  	
+- Recordatorios adicionales  
+- SMS autorizaciones de pagos   
+- Transacción  
+	- Fecha  
+	- Fecha de posteo  
+	- Fondos virtuales  
+- Tipo de Transacción   
+- Estado (Exitosa/Fallida)  
+- Detalle  
+- Monto  
+- Fechas (tanto para pagos como para historial, cobros y notificaciones)  
+- Cantidad de Pagos  
+- Cantidad de Transferencias.  
+- Confirmación pagos	  
+- Compañías  
+- Roles (compañía, usuarios)  
+- Permisos  
+- Subscripciones  
+- Moneda  
+- Símbolos  
+- Alias  
+- Nombre  
+- Símbolo  
+- Conversiones  
+	- Fecha  
+	- Es la actual  
+	- Monto de cambio  
+- Historial (captura detalles del servicio entre otros datos además de la frecuencia y algún tipo de preferencia)  
+- Logs  
+	- Tipo  
+	- Referencias 1 y 2  
+	- Valores de la referencia  
+	- Fuente  
+	- Severidad  
+- Media (fotos, audios, pdf, pdf de los transcripts)  
+	- Tipo  
+		- Nombre  
+		- Reproductor  
+	- Archivos  
+		- URL (para fotos y videos)  
+		- Borrado  
+		- Usuario perteneciente  
+		- Fecha de generación  
+- Horarios  
+	- Nombre  
+	- Recurrencia  
+	- Posibles repeticiones (cada lunes, cada semana, cada mes)  
+	- Posible siguiente ejecución  
+- Idioma  
+- Traduccion  
+- Slangs  
+- Nombre    
+- ScreenRecorder  
+- ScreenEvents  
+- AudioRecorder  
+- Audio Transcripts   
+- AudioEvents  
+- SyncScreenAudio  
+- CuePoints  
+- Transcriptions  
+- Transcription Task  
+- IA  
+- IA Conection  
+- IA Responses  
+- IA ProcessingLogs  
+- Transcript Files  
+- Recording Files  
+- User Preferenses  
 
 **Documetación General del Proyecto**
 Documentación sobre entidades principales
