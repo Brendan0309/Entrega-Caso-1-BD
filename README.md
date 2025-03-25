@@ -134,7 +134,7 @@ GROUP BY
 ORDER BY   
     total_acciones DESC  
 LIMIT 15;<br><br>
-       **Datatable**:
+       **Datatable**:  
 | Nombre Completo     | User ID | Total Acciones | Última Actividad       | Tipo de Ranking |
 |---------------------|---------|----------------|------------------------|-----------------|
 | Joseph Hernandez    | 1       | 8              | 2025-03-25 23:02:29    | Más activo      |
@@ -167,7 +167,7 @@ GROUP BY
 ORDER BY   
     total_acciones ASC  
 LIMIT 15;<br><br>
-       **Datatable**:
+       **Datatable**:  
 | Nombre Completo      | User ID | Acciones | Última Actividad       | Ranking      |
 |----------------------|---------|----------|------------------------|--------------|
 | John Anderson        | 39      | 2        | 2025-03-24 04:06:29    | Menos activo |
@@ -186,6 +186,7 @@ LIMIT 15;<br><br>
 | Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo |
 | Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo |
 <br>
+<pre>
 **Lista de Entidades** (Actualizada)  
 - Personas  
 - Usuarios  
@@ -315,7 +316,7 @@ LIMIT 15;<br><br>
 - Transcript Files  
 - Recording Files  
 - User Preferenses  
-
+</pre>
 **Documetación General del Proyecto**
 Documentación sobre entidades principales
 -> Las APIs
