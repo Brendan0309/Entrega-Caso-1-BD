@@ -42,7 +42,7 @@ INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid<br>
 INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid<br>
 INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid<br>
 WHERE PU.enabled = 1;</pre><br><br>
-   **Datatable**:
+   **Datatable**:<br><br>
 | Nombre               | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
 |----------------------|--------------|--------------------------------------|-------------------------|---------------------|---------|------------|--------------|
 | Kimberly Walker      | España       | kimberly.walker12@example.com        | 2023-01-02 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
@@ -72,7 +72,7 @@ WHERE PU.enabled = 1;</pre><br><br>
 | Ashley Robinson      | Estados Unidos | ashley.robinson23@example.com       | 2023-12-25 00:00:00     | Empresarial         | 25500.00 | Mensual    | 357000.00    |
 | Donna Thompson       | Reino Unido  | donna.thompson81@example.com         | 2024-04-01 00:00:00     | Empresarial         | 25500.00 | Mensual    | 280500.00    |
 | William Jones        | España       | william.jones28@example.com          | 2023-03-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 612000.00    |
-<br>
+<br><br>
 2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros) <br>
    **Código MySQL**:  
 <pre>
@@ -99,7 +99,7 @@ WHERE <br>
     AND ppe.enabled = 1<br>
 ORDER BY <br>
     'Dias Restantes' ASC;</pre><br><br>
-       **Datatable**:
+       **Datatable**:<br><br>
 | Nombre Completo      | Email                           | Suscripción        | Fecha de Expiración     | Días Restantes |
 |----------------------|---------------------------------|--------------------|-------------------------|----------------|
 | Sandra Johnson       | sandra.johnson@example.com      | Personal           | 2025-03-25 00:00:00     | 1              |
@@ -116,7 +116,7 @@ ORDER BY <br>
 | Paul Young           | paul.young94@example.com        | Empresarial        | 2025-04-05 00:00:00     | 12             |
 | Mark Young           | mark.young32@example.com        | Empresarial        | 2025-04-06 00:00:00     | 13             |
 | Ashley Robinson      | ashley.robinson23@example.com   | Empresarial        | 2025-04-07 00:00:00     | 14             |
-<br>
+<br><br>
 3. un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)<br>
    **Código MySQL**:  
 <pre>
@@ -134,7 +134,7 @@ GROUP BY
 ORDER BY   
     total_acciones DESC  
 LIMIT 15;</pre><br><br>
-       **Datatable**:  
+       **Datatable**: <br><br>
 | Nombre Completo     | User ID | Total Acciones | Última Actividad       | Tipo de Ranking |
 |---------------------|---------|----------------|------------------------|-----------------|
 | Joseph Hernandez    | 1       | 8              | 2025-03-25 23:02:29    | Más activo      |
@@ -152,7 +152,7 @@ LIMIT 15;</pre><br><br>
 | Ashley Clark        | 4       | 5              | 2025-03-25 11:44:30    | Más activo      |
 | Charles Walker      | 14      | 5              | 2025-03-23 11:37:30    | Más activo      |
 | Ashley Robinson     | 33      | 5              | 2025-03-04 16:11:29    | Más activo      |
-<br>
+<br><br>
 <pre>
 -- Top 15 usuarios con menos actividad
 SELECT   
@@ -186,8 +186,8 @@ LIMIT 15;</pre><br><br>
 | Richard Harris       | 26      | 1        | 2025-02-05 17:22:29    | Menos activo |
 | Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo |
 | Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo |
-<br>
-<pre><br><br>
+<br><br>
+<pre>
 **Lista de Entidades** (Actualizada)  
 - Personas  
 - Usuarios  
