@@ -73,33 +73,37 @@ WHERE PU.enabled = 1;</pre><br><br>
 | Donna Thompson       | Reino Unido  | donna.thompson81@example.com         | 2024-04-01 00:00:00     | Empresarial         | 25500.00 | Mensual    | 280500.00    |
 | William Jones        | España       | william.jones28@example.com          | 2023-03-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 612000.00    |
 <br><br>
-2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros) <br>
-   **Código MySQL**:  
-<pre>
+## 2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros)
+
+**Código MySQL**:
+```sql
 SELECT 
-    CONCAT(p.firstName, ' ', p.lastName) AS 'Nombre Completo',<br>
-    cip.value AS Email,<br>
-    s.description AS Suscripcion,<br>
-    ppe.expirationDate AS 'Fecha de Expiracion',<br>
-    DATEDIFF(ppe.expirationDate, CURDATE()) AS 'Dias Restantes'<br>
-FROM <br>
-    Payment_PlanPerEntity ppe<br>
-INNER JOIN <br>
-    Payment_Users u ON ppe.userid = u.userid<br>
-INNER JOIN <br>
-    Payment_Personas p ON u.personID = p.personID<br>
-INNER JOIN <br>
-    Payment_ContactInfoPerson cip ON p.personID = cip.personID AND cip.contacInfoTypeId = 1<br>
-INNER JOIN <br>
-    Payment_PlanPrices pp ON ppe.planPriceid = pp.planPriceid<br>
-INNER JOIN <br>
-    Payment_Subscriptions s ON pp.subscriptionid = s.subscriptionid<br>
-WHERE <br>
-    ppe.expirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 15 DAY)<br>
-    AND ppe.enabled = 1<br>
-ORDER BY <br>
-    'Dias Restantes' ASC;</pre><br><br>
-       **Datatable**:<br><br>
+    CONCAT(p.firstName, ' ', p.lastName) AS 'Nombre Completo',
+    cip.value AS Email,
+    s.description AS Suscripcion,
+    ppe.expirationDate AS 'Fecha de Expiracion',
+    DATEDIFF(ppe.expirationDate, CURDATE()) AS 'Dias Restantes'
+FROM 
+    Payment_PlanPerEntity ppe
+INNER JOIN 
+    Payment_Users u ON ppe.userid = u.userid
+INNER JOIN 
+    Payment_Personas p ON u.personID = p.personID
+INNER JOIN 
+    Payment_ContactInfoPerson cip ON p.personID = cip.personID AND cip.contacInfoTypeId = 1
+INNER JOIN 
+    Payment_PlanPrices pp ON ppe.planPriceid = pp.planPriceid
+INNER JOIN 
+    Payment_Subscriptions s ON pp.subscriptionid = s.subscriptionid
+WHERE 
+    ppe.expirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 15 DAY)
+    AND ppe.enabled = 1
+ORDER BY 
+    'Dias Restantes' ASC;
+```
+
+**Datatable**:
+
 | Nombre Completo      | Email                           | Suscripción        | Fecha de Expiración     | Días Restantes |
 |----------------------|---------------------------------|--------------------|-------------------------|----------------|
 | Sandra Johnson       | sandra.johnson@example.com      | Personal           | 2025-03-25 00:00:00     | 1              |
@@ -116,7 +120,6 @@ ORDER BY <br>
 | Paul Young           | paul.young94@example.com        | Empresarial        | 2025-04-05 00:00:00     | 12             |
 | Mark Young           | mark.young32@example.com        | Empresarial        | 2025-04-06 00:00:00     | 13             |
 | Ashley Robinson      | ashley.robinson23@example.com   | Empresarial        | 2025-04-07 00:00:00     | 14             |
-<br><br>
 3. un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)<br>
    **Código MySQL**:  
 <pre>
