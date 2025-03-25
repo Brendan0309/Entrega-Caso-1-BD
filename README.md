@@ -17,7 +17,9 @@ Script para Llenar la base de datos:<br>
  Script para las consultas solicitadas:<br>
  	- ARCHIVO .SQL: [ScriptSelects.sql](./'Script Selects.sql')<br><br>
   <hr>
-  Consultas Solicitadas:<br>
+
+  
+# Consultas Solicitadas:
 ## 1. Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros)
 
 **Código MySQL**:
