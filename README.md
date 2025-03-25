@@ -18,32 +18,44 @@ Script para Llenar la base de datos:<br>
  	- ARCHIVO .SQL: [ScriptSelects.sql](./'Script Selects.sql')<br><br>
   <hr>
   Consultas Solicitadas:
-  	1.  Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros) <br>
-   **Código MySQL**:  
-<pre>
-SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,<br>
-CASE<br>
-    WHEN PP.recurrencyType = 1 THEN 'Mensual'<br>
-    WHEN PP.recurrencyType = 2 THEN 'Anual'<br>
-    WHEN PP.recurrencyType = 3 THEN 'Permanente' END 'Frecuencia de Cobro',<br>
-CASE<br>
-    WHEN PP.recurrencyType = 1 THEN TIMESTAMPDIFF(MONTH, PPE.adquisitionDate, NOW())*PP.amount<br>
-    WHEN PP.recurrencyType = 2 THEN TIMESTAMPDIFF(YEAR, PPE.adquisitionDate, NOW())*PP.amount<br>
-    WHEN PP.recurrencyType = 3 THEN PP.amount END 'Total Pagado'<br>
-FROM Payment_Users PU<br>
-INNER JOIN Payment_Personas PS ON PU.personID= PS.personID<br>
-INNER JOIN Payment_ContactInfoPerson CIP ON (PS.personID = CIP.personID AND CIP.contacInfoTypeID = 1)<br>
-INNER JOIN Payment_UserAdresses UA ON PU.userid = UA.userid<br>
-INNER JOIN Payment_Adresses AD ON UA.adressid = AD.adressid<br>
-INNER JOIN Payment_Cities CY ON CY.cityid = AD.cityid<br>
-INNER JOIN Payment_States ST ON ST.stateid = CY.cityid<br>
-INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid<br>
-INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid<br>
-INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid<br>
-INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid<br>
-WHERE PU.enabled = 1;</pre><br><br>
-   **Datatable**:<br><br>
-| Nombre               | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
+## 1. Listar todos los usuarios activos con suscripciones (2024-actualidad)
+
+**Código MySQL**:
+```sql
+SELECT 
+    CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo',
+    CT.name 'Pais de Origen',
+    CIP.value Correo,
+    PPE.adquisitionDate 'Fecha de inscripcion',
+    PTS.description Subscripcion,
+    PP.amount Precio,
+    CASE
+        WHEN PP.recurrencyType = 1 THEN 'Mensual'
+        WHEN PP.recurrencyType = 2 THEN 'Anual'
+        WHEN PP.recurrencyType = 3 THEN 'Permanente' 
+    END 'Frecuencia de Cobro',
+    CASE
+        WHEN PP.recurrencyType = 1 THEN TIMESTAMPDIFF(MONTH, PPE.adquisitionDate, NOW())*PP.amount
+        WHEN PP.recurrencyType = 2 THEN TIMESTAMPDIFF(YEAR, PPE.adquisitionDate, NOW())*PP.amount
+        WHEN PP.recurrencyType = 3 THEN PP.amount 
+    END 'Total Pagado'
+FROM Payment_Users PU
+INNER JOIN Payment_Personas PS ON PU.personID = PS.personID
+INNER JOIN Payment_ContactInfoPerson CIP ON (PS.personID = CIP.personID AND CIP.contacInfoTypeID = 1)
+INNER JOIN Payment_UserAdresses UA ON PU.userid = UA.userid
+INNER JOIN Payment_Adresses AD ON UA.adressid = AD.adressid
+INNER JOIN Payment_Cities CY ON CY.cityid = AD.cityid
+INNER JOIN Payment_States ST ON ST.stateid = CY.cityid
+INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid
+INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid
+INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid
+INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid
+WHERE PU.enabled = 1;
+```
+
+**Datatable**:
+
+| Nombre Completo      | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
 |----------------------|--------------|--------------------------------------|-------------------------|---------------------|---------|------------|--------------|
 | Kimberly Walker      | España       | kimberly.walker12@example.com        | 2023-01-02 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
 | Sandra Lewis         | Estados Unidos | sandra.lewis62@example.com          | 2025-01-12 00:00:00     | Suscripción Gratis  | 0.00    | Mensual    | 0.00         |
@@ -72,7 +84,6 @@ WHERE PU.enabled = 1;</pre><br><br>
 | Ashley Robinson      | Estados Unidos | ashley.robinson23@example.com       | 2023-12-25 00:00:00     | Empresarial         | 25500.00 | Mensual    | 357000.00    |
 | Donna Thompson       | Reino Unido  | donna.thompson81@example.com         | 2024-04-01 00:00:00     | Empresarial         | 25500.00 | Mensual    | 280500.00    |
 | William Jones        | España       | william.jones28@example.com          | 2023-03-16 00:00:00     | Empresarial         | 25500.00 | Mensual    | 612000.00    |
-<br><br>
 ## 2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros)
 
 **Código MySQL**:
@@ -120,9 +131,11 @@ ORDER BY
 | Paul Young           | paul.young94@example.com        | Empresarial        | 2025-04-05 00:00:00     | 12             |
 | Mark Young           | mark.young32@example.com        | Empresarial        | 2025-04-06 00:00:00     | 13             |
 | Ashley Robinson      | ashley.robinson23@example.com   | Empresarial        | 2025-04-07 00:00:00     | 14             |
-3. un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)<br>
-   **Código MySQL**:  
-<pre>
+## 3. Ranking de actividad de usuarios (Top 15 más y menos activos)
+
+### Top 15 usuarios más activos
+**Código MySQL**:
+```sql
 -- Top 15 usuarios con más actividad 
 SELECT   
     l.username AS nombre_completo,  
@@ -136,8 +149,11 @@ GROUP BY
     l.username, l.referenceid1  
 ORDER BY   
     total_acciones DESC  
-LIMIT 15;</pre><br><br>
-       **Datatable**: <br><br>
+LIMIT 15;
+```
+
+**Datatable**:
+
 | Nombre Completo     | User ID | Total Acciones | Última Actividad       | Tipo de Ranking |
 |---------------------|---------|----------------|------------------------|-----------------|
 | Joseph Hernandez    | 1       | 8              | 2025-03-25 23:02:29    | Más activo      |
@@ -155,8 +171,12 @@ LIMIT 15;</pre><br><br>
 | Ashley Clark        | 4       | 5              | 2025-03-25 11:44:30    | Más activo      |
 | Charles Walker      | 14      | 5              | 2025-03-23 11:37:30    | Más activo      |
 | Ashley Robinson     | 33      | 5              | 2025-03-04 16:11:29    | Más activo      |
-<br><br>
-<pre>
+
+---
+
+### Top 15 usuarios menos activos
+**Código MySQL**:
+```sql
 -- Top 15 usuarios con menos actividad
 SELECT   
     l.username AS nombre_completo,  
@@ -170,8 +190,92 @@ GROUP BY
     l.username, l.referenceid1  
 ORDER BY   
     total_acciones ASC  
-LIMIT 15;</pre><br><br>
-       **Datatable**:  
+LIMIT 15;
+```
+**Datatable:**
+| Nombre Completo      | User ID | Acciones | Última Actividad       | Tipo de Ranking |
+|----------------------|---------|----------|------------------------|-----------------|
+| Joseph Martin        | 29      | 1        | 2025-03-19 03:50:29    | Menos activo    |
+| James Walker         | 24      | 1        | 2025-02-17 05:16:29    | Menos activo    |
+| Richard Harris       | 26      | 1        | 2025-02-05 17:22:29    | Menos activo    |
+| Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo    |
+| Michael King         | 36      | 1        | 2025-03-21 12:51:29    | Menos activo    |
+| Richard Thomas       | 22      | 1        | 2025-03-05 12:05:29    | Menos activo    |
+| Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo    |
+| John Anderson        | 39      | 2        | 2025-03-24 04:06:29    | Menos activo    |
+| Nancy Perez          | 34      | 2        | 2025-01-26 16:50:29    | Menos activo    |
+| Patricia Thompson    | 28      | 2        | 2025-03-19 06:34:29    | Menos activo    |
+| Jessica Williams     | 30      | 2        | 2025-03-13 09:55:29    | Menos activo    |
+| Susan Lewis          | 16      | 2        | 2025-03-14 10:02:29    | Menos activo    |
+| Karen Williams       | 18      | 2        | 2025-03-14 06:23:29    | Menos activo    |
+| Christopher Thomas   | 31      | 2        | 2025-03-12 11:00:29    | Menos activo    |
+| Charles Lopez        | 32      | 2        | 2025-01-20 04:01:29    | Menos activo    |
+
+---
+
+## 4. Determinar cuáles son los análisis donde más está fallando la AI, encontrar los casos, situaciones, interpretaciones, halucinaciones o errores donde el usuario está teniendo más problemas en hacer que la AI determine correctamente lo que se desea hacer, rankeando cada problema de mayor a menor cantidad de ocurrencias entre un rango de fechas (30+ registros)
+
+**Código MySQL**:
+```sql
+SELECT COUNT(1) 'Casos Detectados', AE.name 
+FROM Payment_AIProcessingLogs AP
+INNER JOIN Payment_ScreenAudioSync SAS ON AP.syncID = SAS.syncID
+INNER JOIN Payment_AudioTranscripts ATS ON SAS.transcriptionId = ATS.transcriptionId
+INNER JOIN Payment_AudioRecordings AR ON ATS.audioRecordingsID = AR.audioRecordingsID
+INNER JOIN Payment_AudioEvent AE ON AE.audioEventId = AR.audioEventId 
+WHERE AP.status = 'FAILED'
+AND AP.accuracyObtained < 70
+AND AP.createdAt > '2022-01-01 00:00:00' -- Desde el 2022 hasta la actualidad, rango de fechas se puede ajustar aquí
+GROUP BY AE.name
+ORDER BY COUNT(1) DESC;
+```
+
+**Datatable**:
+
+| Casos Detectados | Nombre del Problema           |
+|------------------|-------------------------------|
+| 13               | Sesgo en reconocimiento       |
+| 12               | Fase invertida                |
+| 12               | Rango dinámico pobre          |
+| 12               | Pérdida de paquetes          |
+| 12               | Volumen irregular            |
+| 11               | Voces solapadas              |
+| 10               | Frecuencia perdida           |
+| 9                | Sibilancia fuerte            |
+| 8                | Micrófono saturado           |
+| 8                | Desincronización AV          |
+| 8                | Procesamiento lento          |
+| 8                | Audio con artefactos         |
+| 8                | Remuestreo defectuoso        |
+| 7                | Silencio erróneo             |
+| 7                | Armónicos falsos             |
+| 7                | Muestreo incompatible        |
+| 7                | Metadatos erróneos           |
+| 7                | Modulación artificial        |
+| 7                | Audio distorsionado          |
+| 7                | Falso positivo               |
+| 7                | Modelo sobreajustado         |
+| 7                | Confunde homófonos           |
+| 6                | Falsa detección voz          |
+| 6                | Cancelación ruido falla      |
+| 6                | Interferencia eléctrica      |
+| 6                | Fallo diarización            |
+| 5                | Ruido no filtrado            |
+| 5                | Aliasing audio               |
+| 5                | Eco residual                 |
+| 5                | Timestamp incorrecto         |
+| 5                | Transcripción incompleta     |
+| 4                | Error en tono                |
+| 4                | Latencia alta                |
+| 4                | Error transcripción          |
+| 3                | Normalización fallida        |
+| 2                | Cuantización mala            |
+| 1                | Corte de audio               |
+| 1                | Clonación voz ilegal         |
+
+---
+**Resultados**:
+
 | Nombre Completo      | User ID | Acciones | Última Actividad       | Ranking      |
 |----------------------|---------|----------|------------------------|--------------|
 | John Anderson        | 39      | 2        | 2025-03-24 04:06:29    | Menos activo |
@@ -189,7 +293,8 @@ LIMIT 15;</pre><br><br>
 | Richard Harris       | 26      | 1        | 2025-02-05 17:22:29    | Menos activo |
 | Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo |
 | Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo |
-<br><br>
+
+
 <pre>
 **Lista de Entidades** (Actualizada)  
 - Personas  
