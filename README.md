@@ -17,8 +17,8 @@ Script para Llenar la base de datos:<br>
  Script para las consultas solicitadas:<br>
  	- ARCHIVO .SQL: [ScriptSelects.sql](./'Script Selects.sql')<br><br>
   <hr>
-  Consultas Solicitadas:
-## 1. Listar todos los usuarios activos con suscripciones (2024-actualidad)
+  Consultas Solicitadas:<br>
+## 1. Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros)
 
 **Código MySQL**:
 ```sql
@@ -131,7 +131,8 @@ ORDER BY
 | Paul Young           | paul.young94@example.com        | Empresarial        | 2025-04-05 00:00:00     | 12             |
 | Mark Young           | mark.young32@example.com        | Empresarial        | 2025-04-06 00:00:00     | 13             |
 | Ashley Robinson      | ashley.robinson23@example.com   | Empresarial        | 2025-04-07 00:00:00     | 14             |
-## 3. Ranking de actividad de usuarios (Top 15 más y menos activos)
+
+## 3. Un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)
 
 ### Top 15 usuarios más activos
 **Código MySQL**:
@@ -274,26 +275,6 @@ ORDER BY COUNT(1) DESC;
 | 1                | Clonación voz ilegal         |
 
 ---
-**Resultados**:
-
-| Nombre Completo      | User ID | Acciones | Última Actividad       | Ranking      |
-|----------------------|---------|----------|------------------------|--------------|
-| John Anderson        | 39      | 2        | 2025-03-24 04:06:29    | Menos activo |
-| Patricia Thompson    | 28      | 2        | 2025-03-19 06:34:29    | Menos activo |
-| Jessica Williams     | 30      | 2        | 2025-03-13 09:55:29    | Menos activo |
-| Susan Lewis          | 16      | 2        | 2025-03-14 10:02:29    | Menos activo |
-| Karen Williams       | 18      | 2        | 2025-03-14 06:23:29    | Menos activo |
-| Christopher Thomas   | 31      | 2        | 2025-03-12 11:00:29    | Menos activo |
-| Nancy Perez          | 34      | 2        | 2025-01-26 16:50:29    | Menos activo |
-| Charles Lopez        | 32      | 2        | 2025-01-20 04:01:29    | Menos activo |
-| Joseph Martin        | 29      | 1        | 2025-03-19 03:50:29    | Menos activo |
-| Michael King         | 36      | 1        | 2025-03-21 12:51:29    | Menos activo |
-| Richard Thomas       | 22      | 1        | 2025-03-05 12:05:29    | Menos activo |
-| James Walker         | 24      | 1        | 2025-02-17 05:16:29    | Menos activo |
-| Richard Harris       | 26      | 1        | 2025-02-05 17:22:29    | Menos activo |
-| Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo |
-| Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo |
-
 
 <pre>
 **Lista de Entidades** (Actualizada)  
