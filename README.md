@@ -20,7 +20,7 @@ Script para Llenar la base de datos:<br>
   Consultas Solicitadas:
   	1.  Listar todos los usuarios de la plataforma que esten activos con su nombre completo, email, país de procedencia, y el total de cuánto han pagado en subscripciones desde el 2024 hasta el día de hoy, dicho monto debe ser en colones (20+ registros) <br>
    **Código MySQL**:  
-
+<pre>
 SELECT CONCAT(PS.firstname, ' ', PS.lastname) AS 'Nombre Completo', CT.name 'Pais de Origen',CIP.value Correo, PPE.adquisitionDate 'Fecha de inscripcion', PTS.description Subscripcion, PP.amount Precio,<br>
 CASE<br>
     WHEN PP.recurrencyType = 1 THEN 'Mensual'<br>
@@ -41,7 +41,7 @@ INNER JOIN Payment_Countries CT ON CT.countryid = ST.countryid<br>
 INNER JOIN Payment_PlanPerEntity PPE ON PPE.userid = PU.userid<br>
 INNER JOIN Payment_PlanPrices PP ON PPE.planPriceid = PP.planPriceid<br>
 INNER JOIN Payment_Subscriptions PTS ON PP.subscriptionid = PTS.subscriptionid<br>
-WHERE PU.enabled = 1;<br><br>
+WHERE PU.enabled = 1;</pre><br><br>
    **Datatable**:
 | Nombre               | País         | Email                                | Fecha de Registro       | Tipo de Suscripción | Monto   | Frecuencia | Total Pagado |
 |----------------------|--------------|--------------------------------------|-------------------------|---------------------|---------|------------|--------------|
@@ -75,7 +75,7 @@ WHERE PU.enabled = 1;<br><br>
 <br>
 2. Listar todas las personas con su nombre completo e email, los cuales le queden menos de 15 días para tener que volver a pagar una nueva subscripción (13+ registros) <br>
    **Código MySQL**:  
-
+<pre>
 SELECT 
     CONCAT(p.firstName, ' ', p.lastName) AS 'Nombre Completo',<br>
     cip.value AS Email,<br>
@@ -98,7 +98,7 @@ WHERE <br>
     ppe.expirationDate BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 15 DAY)<br>
     AND ppe.enabled = 1<br>
 ORDER BY <br>
-    'Dias Restantes' ASC;<br><br>
+    'Dias Restantes' ASC;</pre><br><br>
        **Datatable**:
 | Nombre Completo      | Email                           | Suscripción        | Fecha de Expiración     | Días Restantes |
 |----------------------|---------------------------------|--------------------|-------------------------|----------------|
@@ -119,7 +119,7 @@ ORDER BY <br>
 <br>
 3. un ranking del top 15 de usuarios que más uso le dan a la aplicación y el top 15 que menos uso le dan a la aplicación (15 y 15 registros)<br>
    **Código MySQL**:  
-
+<pre>
 -- Top 15 usuarios con más actividad 
 SELECT   
     l.username AS nombre_completo,  
@@ -133,7 +133,7 @@ GROUP BY
     l.username, l.referenceid1  
 ORDER BY   
     total_acciones DESC  
-LIMIT 15;<br><br>
+LIMIT 15;</pre><br><br>
        **Datatable**:  
 | Nombre Completo     | User ID | Total Acciones | Última Actividad       | Tipo de Ranking |
 |---------------------|---------|----------------|------------------------|-----------------|
@@ -153,6 +153,7 @@ LIMIT 15;<br><br>
 | Charles Walker      | 14      | 5              | 2025-03-23 11:37:30    | Más activo      |
 | Ashley Robinson     | 33      | 5              | 2025-03-04 16:11:29    | Más activo      |
 <br>
+<pre>
 -- Top 15 usuarios con menos actividad
 SELECT   
     l.username AS nombre_completo,  
@@ -166,7 +167,7 @@ GROUP BY
     l.username, l.referenceid1  
 ORDER BY   
     total_acciones ASC  
-LIMIT 15;<br><br>
+LIMIT 15;</pre><br><br>
        **Datatable**:  
 | Nombre Completo      | User ID | Acciones | Última Actividad       | Ranking      |
 |----------------------|---------|----------|------------------------|--------------|
@@ -186,7 +187,7 @@ LIMIT 15;<br><br>
 | Sandra Lewis         | 21      | 1        | 2025-02-02 08:08:29    | Menos activo |
 | Donald Nguyen        | 19      | 1        | 2025-01-17 07:39:29    | Menos activo |
 <br>
-<pre>
+<pre><br><br>
 **Lista de Entidades** (Actualizada)  
 - Personas  
 - Usuarios  
